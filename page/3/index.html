@@ -1,0 +1,27 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="Ben Wong,wenbinben@gmail.com"><title>沈小黑的菜园</title><meta name="description" content="点滴收获"><meta name="keywords" content="Hexo,HTML,Ben,CSS,安卓,android,Linux,linuxdeepin"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="short icon" href="/images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/blog_basic.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"></head><body><div class="sidebar animated fadeInDown"><div class="logo-title"><div class="title"><img src="/images/logo@2x.png" style="width:127px;"><h3 title=""><a href="/">沈小黑的菜园</a></h3><div class="description"><p>Nothing lasts forever.</p></div></div></div><ul class="social-links"><li><a href="https://twitter.com/Ben_wenbin"><i class="fa fa-twitter"></i></a></li><li><a href="http://instagram.com/hwbinbenben"><i class="fa fa-instagram"></i></a></li><li><a href="/atom.xml"><i class="fa fa-rss"></i></a></li><li><a href="http://weibo.com/ben0036"><i class="fa fa-weibo"></i></a></li></ul><div class="footer"><a target="_blank" href="/"><span>Theme by </span></a><a href="https://www.caicai.me"> CaiCai</a><span>&</span><a href="https://github.com/Ben02/hexo-theme-Anatole"> Ben</a><div class="by_farbox"><a href="https://hexo.io/zh-cn/" target="_blank">Proudly published with Hexo&#65281;</a></div></div></div><div class="main"><div class="page-top animated fadeInDown"><div class="nav"><li><a href="/" class="current">首页</a></li><li><a href="/about">关于</a></li><li><a href="/archives">归档</a></li><li><a href="/links">友链</a></li></div><div class="information"><div class="back_btn"><li><a onclick="window.history.go(-1)" style="display:none;" class="fa fa-chevron-left"> </a></li></div><div class="avatar"><img src="https://secure.gravatar.com/avatar/e71df8021446fe9759a9928b1dd5c28d?s=180&amp;r=G&amp;d="></div></div></div><div class="autopagerize_page_element"><div class="content"><div class="post animated fadeInDown"><div class="post-title"><h3><a href="/2015/09/24/二叉树-红黑树小结/">简单搜索二叉树&amp;红黑树小结</a></h3></div><div class="post-content"><p>二叉树是很重要的数据结构，今次的任务是复习一下搜索二叉树和红黑树~主要对应《算法导论》中的《二叉搜索树》和《红黑树》两章。这里的搜索二叉树不是B树，所以插入操作时不需要进行专门的旋转操作。
+
+二叉搜索树二叉搜索树性质二叉搜索树满足的性质：
+
+如果y是x左子树的一个节点，那么y.key$\leq$x.key。如果y...</p></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2015-09-24</span><i class="fa fa-tag"></i><a href="/tags/算法/" title="算法" class="tag">算法 </a></div></div></div></div><div class="post animated fadeInDown"><div class="post-title"><h3><a href="/2015/09/23/线性时间排序/">线性时间排序</a></h3></div><div class="post-content"><p>任何基于决策树的比较排序在最坏情况下都要经过$\Omega(nlgn)$次比较。因此，任何已知的比较排序最多在常数因子上优于归并排序和堆排序。
+
+计数排序计数排序假设n个输入元素中的每一个都是在0到k之间的一个整数。对每个输入元素x，如果有i个元素小于x,那么x就被放在i+1的位置上。
+在计数排序的算法中，输入数...</p></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2015-09-23</span><i class="fa fa-tag"></i><a href="/tags/算法/" title="算法" class="tag">算法 </a></div></div></div></div><div class="post animated fadeInDown"><div class="post-title"><h3><a href="/2015/09/22/快速排序算法小结/">快速排序算法小结</a></h3></div><div class="post-content"><p>快速排序最坏情况下的时间复杂度是$\Theta(n^2)$，但是它的期望时间复杂度是$\Theta(nlogn)$，而且隐含的常数因子非常小。
+今天的文章复习一下快排的原理和尝试着自己实现一下代码。
+
+大体思路快排的大体思路是：将一个数组A[p..r]划分成子数组A[p..q-1]和A[q+1..r]，使得前半部...</p></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2015-09-22</span><i class="fa fa-tag"></i><a href="/tags/算法/" title="算法" class="tag">算法 </a></div></div></div></div><div class="post animated fadeInDown"><div class="post-title"><h3><a href="/2015/09/21/hexo的坑/">hexo的坑</a></h3></div><div class="post-content"><p>hexo很酷，但是在使用过程中也遇到了很多坑…在此记录一下这些或大或小的坑。
+
+
+hexo中使用LaTeX语法，由于下划线”_“会先被解析为强调符号，所以需要将LaTeX的下标”_“改成”\_“，然后本地就没办法看到公式效果了= =
+
+标题#后一定要加空格，否则无法解析…
+
+公式中不能有中文…..
+
+博客部署到g...</p></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2015-09-21</span><i class="fa fa-tag"></i><a href="/tags/hexo/" title="hexo" class="tag">hexo </a></div></div></div></div><div class="post animated fadeInDown"><div class="post-title"><h3><a href="/2015/09/21/神经网络反向传播计算过程笔记/">神经网络反向传播计算过程笔记</a></h3></div><div class="post-content"><p>神经网络示意
+
+
+反向传播计算对于每一个训练样本，进行如下循环:
+
+正向传播计算出$a^{(2)}、z^{(2)}、a^{(3)}、z^{(3)}$等结果。正向传播计算的方法很简单，在此不再赘述。
+计算$\delta_k^{(3)}=(a_k^{(3)}-y_k)$，这表明最后的计算结果和真实结果之间的误差。
+根...</p></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2015-09-21</span><i class="fa fa-tag"></i><a href="/tags/机器学习/" title="机器学习" class="tag">机器学习 </a><a href="/tags/课程学习/" title="课程学习" class="tag">课程学习 </a></div></div></div></div><div class="pagination"><ul class="clearfix"><li class="pre pagbuttons"><a role="navigation" href="/page/2/" class="btn">上一页</a></li></ul></div></div></div></div><script src="/js/jquery.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script></body></html>
