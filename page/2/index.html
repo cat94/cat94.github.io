@@ -1,27 +1,1136 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="Ben Wong,wenbinben@gmail.com"><title>沈小黑的菜园</title><meta name="description" content="点滴收获"><meta name="keywords" content="Hexo,HTML,Ben,CSS,安卓,android,Linux,linuxdeepin"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="short icon" href="/images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/blog_basic.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"></head><body><div class="sidebar animated fadeInDown"><div class="logo-title"><div class="title"><img src="/images/logo@2x.png" style="width:127px;"><h3 title=""><a href="/">沈小黑的菜园</a></h3><div class="description"><p>Nothing lasts forever.</p></div></div></div><ul class="social-links"><li><a href="https://twitter.com/Ben_wenbin"><i class="fa fa-twitter"></i></a></li><li><a href="http://instagram.com/hwbinbenben"><i class="fa fa-instagram"></i></a></li><li><a href="/atom.xml"><i class="fa fa-rss"></i></a></li><li><a href="http://weibo.com/ben0036"><i class="fa fa-weibo"></i></a></li></ul><div class="footer"><a target="_blank" href="/"><span>Theme by </span></a><a href="https://www.caicai.me"> CaiCai</a><span>&</span><a href="https://github.com/Ben02/hexo-theme-Anatole"> Ben</a><div class="by_farbox"><a href="https://hexo.io/zh-cn/" target="_blank">Proudly published with Hexo&#65281;</a></div></div></div><div class="main"><div class="page-top animated fadeInDown"><div class="nav"><li><a href="/" class="current">首页</a></li><li><a href="/about">关于</a></li><li><a href="/archives">归档</a></li><li><a href="/links">友链</a></li></div><div class="information"><div class="back_btn"><li><a onclick="window.history.go(-1)" style="display:none;" class="fa fa-chevron-left"> </a></li></div><div class="avatar"><img src="https://secure.gravatar.com/avatar/e71df8021446fe9759a9928b1dd5c28d?s=180&amp;r=G&amp;d="></div></div></div><div class="autopagerize_page_element"><div class="content"><div class="post animated fadeInDown"><div class="post-title"><h3><a href="/2016/01/07/《HBase实战》随笔——数据操作/">《HBase实战》随笔——数据操作</a></h3></div><div class="post-content"><p>工具的学问总是流于表面，工具内部的艰深又鲜能触及。在eBay实习期间，难免使用到HBase，再加上下季度可能会有这方面的工作，所以看看《HBase实战》学习一下HBase。
-对于Hadoop、Yarn、HDFS、HBase这些工具，我都还是个彻彻底底的门外汉。笔记不追求记录下方方面面，只求将涉及工作机制的话题进行...</p></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2016-01-07</span><i class="fa fa-tag"></i><a href="/tags/大数据/" title="大数据" class="tag">大数据 </a><a href="/tags/HBase/" title="HBase" class="tag">HBase </a></div></div></div></div><div class="post animated fadeInDown"><div class="post-title"><h3><a href="/2015/12/29/Hadoop笔记/">HDFS起步笔记</a></h3></div><div class="post-content"><p>阅读Hadoop官方文档，并记录之。
-安装自不提，在单机上使用Single Node Setup模式即可，具体安装步骤无非按部就班，在官网上即可查询。
+<!doctype html>
+<html class="theme-next use-motion theme-next-mist">
+<head>
+  
 
-Hadoop Cluster的三个模式：这一小节和下一小节严格来说不算是HDFS的内容，只是按照顺序看下来，一并进行记录。
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
-Local (Standalone...</p></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2015-12-29</span><i class="fa fa-tag"></i><a href="/tags/大数据/" title="大数据" class="tag">大数据 </a><a href="/tags/Hadoop/" title="Hadoop" class="tag">Hadoop </a></div></div></div></div><div class="post animated fadeInDown"><div class="post-title"><h3><a href="/2015/11/29/Java并发编程实战-读书笔记/">Java并发编程实战 读书笔记</a></h3></div><div class="post-content"><p>Java并发编程实战——一本近300页的薄书，但是却延宕了相当长一段时间。中间上公开课，转职……注意力完全不在这本书上，到现在也只看了一半。想来应该做个笔记，就先把之前看的一半笔记写上，一并算是复习了。
 
-对象的共享可见性所谓可见性就是变量在被访问的时候一定是最新的值。下面的程序展示了一种不满足可见性的情况：
-1...</p></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2015-11-29</span><i class="fa fa-tag"></i><a href="/tags/读书笔记/" title="读书笔记" class="tag">读书笔记 </a><a href="/tags/Java/" title="Java" class="tag">Java </a></div></div></div></div><div class="post animated fadeInDown"><div class="post-title"><h3><a href="/2015/11/02/Ruby元编程-Week-5/">Ruby元编程 星期五</a></h3></div><div class="post-content"><p>Kernel#eval我们已经知道instance_eval和class_eval，现在接触*eval的第三个成员——eval方法。eval方法会直接执行代码字符串。
-123array = [10, 20]element = 30eval("array &lt;&lt; element") 	# =&gt; [1...</p></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2015-11-02</span><i class="fa fa-tag"></i><a href="/tags/Ruby/" title="Ruby" class="tag">Ruby </a></div></div></div></div><div class="post animated fadeInDown"><div class="post-title"><h3><a href="/2015/10/28/Ruby元编程-Week-4/">Ruby元编程 星期四</a></h3></div><div class="post-content"><p>类定义即将走进”Ruby对象模型最深暗的角落”…和Java不同，在Ruby中，定义类实际上就是在运行代码，这种思想催生了1、可以修改类的类宏 2、可以在其他方法前后封装额外代码的环绕别名。当然，因为类不过是增强的模块，所以这些知识也可以应用于模块。
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-当前类方法所属判断是依靠定义方法的所在self判断的，所以对于...</p></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2015-10-28</span><i class="fa fa-tag"></i><a href="/tags/Ruby/" title="Ruby" class="tag">Ruby </a></div></div></div></div><div class="post animated fadeInDown"><div class="post-title"><h3><a href="/2015/10/26/Ruby元编程-Week-3/">Ruby元编程 星期三</a></h3></div><div class="post-content"><p>代码块块可以用来控制作用域，它只是Ruby中“可调用对象”的一种，还有其他的可调用对象，比如proc和lambda。在这一章将会学习怎样利用这些对象来进行元编程。
-前面两章的内容跟普通的面向对象没有很大的区别，但是代码块源于函数式编程语言，所以会带有函数式编程独特的思考角度~
 
-块基础在Ruby中块是指大括号{}...</p></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2015-10-26</span><i class="fa fa-tag"></i><a href="/tags/Ruby/" title="Ruby" class="tag">Ruby </a></div></div></div></div><div class="post animated fadeInDown"><div class="post-title"><h3><a href="/2015/10/24/Ruby元编程-Week-2/">Ruby元编程 星期二</a></h3></div><div class="post-content"><p>解决代码重复在星期二，书中给出了一个关于包装老系统接口造成代码冗余的例子。下面是这个例子，它贯穿了整个章节，集中体现了Ruby道路的优越性+_+
-有一个老系统，他有很多蹩脚的代码，现在要求系统自动为超过99美元的开销添加标记。
 
-蹩脚的代码是这样的:
-12345678910class DS	def initial...</p></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2015-10-24</span><i class="fa fa-tag"></i><a href="/tags/Ruby/" title="Ruby" class="tag">Ruby </a></div></div></div></div><div class="post animated fadeInDown"><div class="post-title"><h3><a href="/2015/10/24/Ruby元编程-Week-1/">Ruby元编程 星期一</a></h3></div><div class="post-content"><p>转入魔都啊哈~自从不做阿里实习生之后，在学校浑浑噩噩过了一周左右，终于又开始找实习~先投了猿题库，无奈要等到十月中旬才能面试，就先面了eBay，没想到还挺顺利地就过了，就这么当着杭州的二房东跑到上海开始实习生涯了~~P.S. 6号拿到offer13号入职，到现在才写下这段话的效率也是堪忧啊~
 
-初遇Ruby说是R...</p></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2015-10-24</span><i class="fa fa-tag"></i><a href="/tags/Ruby/" title="Ruby" class="tag">Ruby </a></div></div></div></div><div class="post animated fadeInDown"><div class="post-title"><h3><a href="/2015/10/02/机器学习-ex6/">机器学习 ex6</a></h3></div><div class="post-content"><p>第六次作业是关于支持向量机的一个小练习，借此小练习也巩固一下支持向量机的使用过程。
-这次作业分为两个部分，第一部分的大致内容是利用支持向量机和多个二维数据集来体验运行SVM和使用高斯核函数的过程。第二部分则是使用支持向量机来构造一个简单的垃圾邮件分类器。
 
-第一部分第一部门的主要任务是利用SVM，得到一个线性边界...</p></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2015-10-02</span><i class="fa fa-tag"></i><a href="/tags/机器学习/" title="机器学习" class="tag">机器学习 </a></div></div></div></div><div class="post animated fadeInDown"><div class="post-title"><h3><a href="/2015/09/27/核函数/">核函数</a></h3></div><div class="post-content"><p>核函数是支持向量机经常使用的一种度量函数
 
-核函数假如要拟合，可能会用$y = \theta_0+\theta_1x_1+\theta_2x_2+\theta_3x_1x_2+\theta_4x_1^2+\theta_5x_2^2+\ldots$，当$y \geq 0$时，判断为1。但是我们并不知道哪些高次项是有...</p></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2015-09-27</span><i class="fa fa-tag"></i><a href="/tags/机器学习/" title="机器学习" class="tag">机器学习 </a></div></div></div></div><div class="pagination"><ul class="clearfix"><li class="pre pagbuttons"><a role="navigation" href="/" class="btn">上一页</a></li><li class="next pagbuttons"><a role="navigation" href="/page/3/" class="btn">下一页</a></li></ul></div></div></div></div><script src="/js/jquery.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script></body></html>
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.5.1"/>
+
+
+    <meta name="description" content="点滴收获" />
+
+
+
+  <meta name="keywords" content="沈佳楠,沈小黑" />
+
+
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
+
+
+<meta name="description" content="点滴收获">
+<meta property="og:type" content="website">
+<meta property="og:title" content="沈小黑的菜园">
+<meta property="og:url" content="http://www.shenjianan.net/page/2/index.html">
+<meta property="og:site_name" content="沈小黑的菜园">
+<meta property="og:description" content="点滴收获">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="沈小黑的菜园">
+<meta name="twitter:description" content="点滴收获">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'hide'
+  };
+</script>
+
+  <title> 沈佳楠,沈小黑 - 沈小黑的菜园 - 点滴收获 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+  <div class="container one-column 
+   page-home 
+">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-next-logo"></i>
+      </span>
+      <span class="site-title">沈小黑的菜园</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon icon-next-home"></i> <br />
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            <i class="menu-item-icon icon-next-about"></i> <br />
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-next-archives"></i> <br />
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-next-tags"></i> <br />
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <form class="site-search-form">
+    <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+  </form>
+
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', '2G2hzrM2qW7Y8zUsJDDr','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content"> 
+  <section id="posts" class="posts-expand">
+    
+      
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              <a class="post-title-link" href="/2016/01/07/《HBase实战》随笔——数据操作/" itemprop="url">
+                《HBase实战》随笔——数据操作
+              </a>
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2016-01-07T21:08:35+08:00" content="2016-01-07">
+            2016-01-07
+          </time>
+        </span>
+
+        
+
+        
+          
+            <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2016/01/07/《HBase实战》随笔——数据操作/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2016/01/07/《HBase实战》随笔——数据操作/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <p>工具的学问总是流于表面，工具内部的艰深又鲜能触及。在eBay实习期间，难免使用到HBase，再加上下季度可能会有这方面的工作，所以看看《HBase实战》学习一下HBase。</p>
+<p>对于Hadoop、Yarn、HDFS、HBase这些工具，我都还是个彻彻底底的门外汉。笔记不追求记录下方方面面，只求将涉及工作机制的话题进行归纳，本质还是读书笔记，可能还会根据官网上的文档进一步研究完善。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/01/07/《HBase实战》随笔——数据操作/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              <a class="post-title-link" href="/2015/12/29/Hadoop笔记/" itemprop="url">
+                HDFS起步笔记
+              </a>
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2015-12-29T22:44:08+08:00" content="2015-12-29">
+            2015-12-29
+          </time>
+        </span>
+
+        
+
+        
+          
+            <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2015/12/29/Hadoop笔记/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/29/Hadoop笔记/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <p>阅读Hadoop官方文档，并记录之。</p>
+<p>安装自不提，在单机上使用Single Node Setup模式即可，具体安装步骤无非按部就班，在<a href="http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/SingleCluster.html">官网</a>上即可查询。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/12/29/Hadoop笔记/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              <a class="post-title-link" href="/2015/11/29/Java并发编程实战-读书笔记/" itemprop="url">
+                Java并发编程实战 读书笔记
+              </a>
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2015-11-29T22:28:19+08:00" content="2015-11-29">
+            2015-11-29
+          </time>
+        </span>
+
+        
+
+        
+          
+            <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2015/11/29/Java并发编程实战-读书笔记/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/29/Java并发编程实战-读书笔记/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <p>Java并发编程实战——一本近300页的薄书，但是却延宕了相当长一段时间。中间上公开课，转职……注意力完全不在这本书上，到现在也只看了一半。想来应该做个笔记，就先把之前看的一半笔记写上，一并算是复习了。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/11/29/Java并发编程实战-读书笔记/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              <a class="post-title-link" href="/2015/11/02/Ruby元编程-Week-5/" itemprop="url">
+                Ruby元编程 星期五
+              </a>
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2015-11-02T15:44:53+08:00" content="2015-11-02">
+            2015-11-02
+          </time>
+        </span>
+
+        
+
+        
+          
+            <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2015/11/02/Ruby元编程-Week-5/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/02/Ruby元编程-Week-5/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <h1 id="Kernel-eval"><a href="#Kernel-eval" class="headerlink" title="Kernel#eval"></a>Kernel#eval</h1><p>我们已经知道instance_eval和class_eval，现在接触*eval的第三个成员——eval方法。eval方法会直接执行代码字符串。</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">array = [<span class="number">10</span>, <span class="number">20</span>]</div><div class="line">element = <span class="number">30</span></div><div class="line">eval(<span class="string">"array &lt;&lt; element"</span>) 	<span class="comment"># =&gt; [10, 20, 30]</span></div></pre></td></tr></table></figure>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/11/02/Ruby元编程-Week-5/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              <a class="post-title-link" href="/2015/10/28/Ruby元编程-Week-4/" itemprop="url">
+                Ruby元编程 星期四
+              </a>
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2015-10-28T22:14:08+08:00" content="2015-10-28">
+            2015-10-28
+          </time>
+        </span>
+
+        
+
+        
+          
+            <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2015/10/28/Ruby元编程-Week-4/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/28/Ruby元编程-Week-4/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <h1 id="类定义"><a href="#类定义" class="headerlink" title="类定义"></a>类定义</h1><p>即将走进”Ruby对象模型最深暗的角落”…和Java不同，在Ruby中，定义类实际上就是在运行代码，这种思想催生了1、可以修改类的类宏 2、可以在其他方法前后封装额外代码的环绕别名。当然，因为类不过是增强的模块，所以这些知识也可以应用于模块。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/10/28/Ruby元编程-Week-4/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              <a class="post-title-link" href="/2015/10/26/Ruby元编程-Week-3/" itemprop="url">
+                Ruby元编程 星期三
+              </a>
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2015-10-26T20:05:37+08:00" content="2015-10-26">
+            2015-10-26
+          </time>
+        </span>
+
+        
+
+        
+          
+            <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2015/10/26/Ruby元编程-Week-3/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/26/Ruby元编程-Week-3/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <h1 id="代码块"><a href="#代码块" class="headerlink" title="代码块"></a>代码块</h1><p>块可以用来控制作用域，它只是Ruby中“可调用对象”的一种，还有其他的可调用对象，比如proc和lambda。在这一章将会学习怎样利用这些对象来进行元编程。</p>
+<p>前面两章的内容跟普通的面向对象没有很大的区别，但是代码块源于函数式编程语言，所以会带有函数式编程独特的思考角度~</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/10/26/Ruby元编程-Week-3/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              <a class="post-title-link" href="/2015/10/24/Ruby元编程-Week-2/" itemprop="url">
+                Ruby元编程 星期二
+              </a>
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2015-10-24T23:16:17+08:00" content="2015-10-24">
+            2015-10-24
+          </time>
+        </span>
+
+        
+
+        
+          
+            <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2015/10/24/Ruby元编程-Week-2/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/24/Ruby元编程-Week-2/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <h1 id="解决代码重复"><a href="#解决代码重复" class="headerlink" title="解决代码重复"></a>解决代码重复</h1><p>在星期二，书中给出了一个关于包装老系统接口造成代码冗余的例子。下面是这个例子，它贯穿了整个章节，集中体现了Ruby道路的优越性+_+</p>
+<p>有一个老系统，他有很多蹩脚的代码，现在要求系统自动为超过99美元的开销添加标记。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/10/24/Ruby元编程-Week-2/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              <a class="post-title-link" href="/2015/10/24/Ruby元编程-Week-1/" itemprop="url">
+                Ruby元编程 星期一
+              </a>
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2015-10-24T19:05:40+08:00" content="2015-10-24">
+            2015-10-24
+          </time>
+        </span>
+
+        
+
+        
+          
+            <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2015/10/24/Ruby元编程-Week-1/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/24/Ruby元编程-Week-1/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <h1 id="转入魔都"><a href="#转入魔都" class="headerlink" title="转入魔都"></a>转入魔都</h1><p>啊哈~自从不做阿里实习生之后，在学校浑浑噩噩过了一周左右，终于又开始找实习~先投了猿题库，无奈要等到十月中旬才能面试，就先面了eBay，没想到还挺顺利地就过了，就这么当着杭州的二房东跑到上海开始实习生涯了~~<br>P.S. 6号拿到offer13号入职，到现在才写下这段话的效率也是堪忧啊~</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/10/24/Ruby元编程-Week-1/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              <a class="post-title-link" href="/2015/10/02/机器学习-ex6/" itemprop="url">
+                机器学习 ex6
+              </a>
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2015-10-02T20:36:19+08:00" content="2015-10-02">
+            2015-10-02
+          </time>
+        </span>
+
+        
+
+        
+          
+            <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2015/10/02/机器学习-ex6/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/02/机器学习-ex6/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <p>第六次作业是关于支持向量机的一个小练习，借此小练习也巩固一下支持向量机的使用过程。</p>
+<p>这次作业分为两个部分，第一部分的大致内容是利用支持向量机和多个二维数据集来体验运行SVM和使用高斯核函数的过程。第二部分则是使用支持向量机来构造一个简单的垃圾邮件分类器。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/10/02/机器学习-ex6/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              <a class="post-title-link" href="/2015/09/27/核函数/" itemprop="url">
+                核函数
+              </a>
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2015-09-27T19:05:40+08:00" content="2015-09-27">
+            2015-09-27
+          </time>
+        </span>
+
+        
+
+        
+          
+            <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2015/09/27/核函数/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/09/27/核函数/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <p>核函数是支持向量机经常使用的一种度量函数</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/09/27/核函数/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+  </section>
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/">&laquo;</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">&raquo;</a>
+  </nav>
+
+ </div>
+
+        
+
+        
+      </div>
+
+      
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="http://7xirbw.com1.z0.glb.clouddn.com/totoro.jpg" alt="沈佳楠" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">沈佳楠</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">点滴收获</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">25</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            
+              <span class="site-state-item-count">0</span>
+              <span class="site-state-item-name">分类</span>
+              
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">11</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/cat94" target="_blank">github</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="shenjianan@126.com" target="_blank">email</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="shen_jianan" target="_blank">WeChat</a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner"> <div class="copyright" >
+  
+  &copy; &nbsp;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-next-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">沈佳楠</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+ </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"shenjianan"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+    
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.1"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.1"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.5.1" id="motion.global"></script>
+
+
+
+
+  <script type="text/javascript" src="/js/nav-toggle.js?v=0.4.5.1"></script>
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      if (CONFIG.sidebar === 'always') {
+        displaySidebar();
+      }
+      if (isMobile()) {
+        FastClick.attach(document.body);
+      }
+    });
+  </script>
+
+  
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/lazyload.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $("#posts").find('img').lazyload({
+        placeholder: "/images/loading.gif",
+        effect: "fadeIn"
+      });
+    });
+  </script>
+</body>
+</html>
