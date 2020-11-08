@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>
+Ruby元编程 星期三
+</title>
+
+    
+  <link href="https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/avatars/totoro3.jpeg?x-oss-process=style/icon" rel="shortcut icon" type="image/x-icon" />
+
+
+
+  
+  <meta name="author" content="Shen Jianan" />
+  <meta name="description" content="代码块 块可以用来控制作用域，它只是Ruby中“可调用对象”的一种，还有其他的可调用对象，比如proc和lambda。在这一章将会学习怎样利用这些对象来进行元编程。
+前面两章的内容跟普通的面向对象没有很大的区别，但是代码块源于函数式编程语言，所以会带有函数式编程独特的思考角度~
+" />
+
+
+
+<meta name="generator" content="Hugo 0.68.3" />
+
+<link rel="canonical" href="http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-3/" />
+
+
+<meta property="og:title" content="Ruby元编程 星期三" />
+<meta property="og:description" content="代码块
+块可以用来控制作用域，它只是Ruby中“可调用对象”的一种，还有其他的可调用对象，比如proc和lambda。在这一章将会学习怎样利用这些对象来进行元编程。
+前面两章的内容跟普通的面向对象没有很大的区别，但是代码块源于函数式编程语言，所以会带有函数式编程独特的思考角度~" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-3/" />
+<meta property="article:published_time" content="2015-10-26T20:05:37+00:00" />
+<meta property="article:modified_time" content="2015-10-26T20:05:37+00:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Ruby元编程 星期三"/>
+<meta name="twitter:description" content="代码块
+块可以用来控制作用域，它只是Ruby中“可调用对象”的一种，还有其他的可调用对象，比如proc和lambda。在这一章将会学习怎样利用这些对象来进行元编程。
+前面两章的内容跟普通的面向对象没有很大的区别，但是代码块源于函数式编程语言，所以会带有函数式编程独特的思考角度~"/>
+
+
+<link rel="stylesheet" href="/css/github-markdown.css" />
+<link rel="stylesheet" href="/css/semantic.min.css" />
+<link rel="stylesheet" href="/css/site.css" />
+
+
+
+
+
+  </head>
+
+  
+  <body style="background-image: url(https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/bg/mountains-covered-in-snow-mid.jpg);">
+  
+    <div class="flip-container">
+      <div class="flipper">
+        <section class="front">
+          
+<nav class="ui secondary menu dream-menu">
+
+  <div class="item">
+    <i class="large link bullseye icon dream-flip-toggle" title="Flip it!"></i>
+  </div>
+  <div class="item">
+    <i class="large link home icon" title="Home" onclick="window.location.href = 'http:\/\/www.shenjianan.top\/'"></i>
+  </div>
+  <div class="item">
+    <i class="large link icon theme-switch" onclick="themeSwitch()"></i>
+  </div>
+</nav>
+
+          
+<div class="ui centered relaxed grid dream-grid">
+  <div class="sixteen wide mobile sixteen wide tablet twelve wide computer column markdown-body dream-single">
+
+    <section class="ui top attached segment" id="dream-save-post-as-img">
+      <header style="margin-top: 0 !important;">
+        <h2 class="ui header">
+          Ruby元编程 星期三
+          <div class="sub header">@ Shen Jianan · Monday, Oct 26, 2015 · 9 minute read · Update at Oct 26, 2015</div>
+        </h2>
+      </header>
+      <article style="margin-top: 2rem;"><h1 id="代码块">代码块</h1>
+<p>块可以用来控制作用域，它只是Ruby中“可调用对象”的一种，还有其他的可调用对象，比如proc和lambda。在这一章将会学习怎样利用这些对象来进行元编程。</p>
+<p>前面两章的内容跟普通的面向对象没有很大的区别，但是代码块源于函数式编程语言，所以会带有函数式编程独特的思考角度~</p>
+<h1 id="块基础">块基础</h1>
+<p>在Ruby中块是指大括号{}或者do&hellip;end之间的代码块，只有在调用一个方法时，才可以定义一个块。块会被传递给这个方法，该方法可以使用yield调用这个块。</p>
+<p>使用yield调用代码块的例子：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">a_method</span>
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">yield</span> <span style="color:#66d9ef">if</span> block_given?
+  <span style="color:#e6db74">&#39;no block&#39;</span>
+<span style="color:#66d9ef">end</span>
+
+
+p a_method      <span style="color:#75715e">#=&gt; no block</span>
+p a_method{<span style="color:#e6db74">&#39;The block !&#39;</span>}  <span style="color:#75715e">#=&gt; the block!</span>
+</code></pre></div><p>在Java中，有内部作用域的概念，在内部作用域可以看到外部作用域的变量。但是Ruby没有这种嵌套式的作用域，一旦进入新的作用域，原来的绑定就会被替换成一组新的绑定。这意味着在如下的代码中，v1在MyClass的作用域之外，一旦进入MyClass之后v1就不可见了。但是全局变量是可以跨越作用域的~~</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">v1 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+$v2 <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyClass</span>
+  v3 <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">print_v1</span>
+    p v1
+  <span style="color:#66d9ef">end</span>
+  
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">print_v2</span>
+  	 p v2
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+
+
+<span style="color:#66d9ef">MyClass</span><span style="color:#f92672">.</span>new<span style="color:#f92672">.</span>print_v1    <span style="color:#75715e">#=&gt; Error!</span>
+<span style="color:#66d9ef">MyClass</span><span style="color:#f92672">.</span>new<span style="color:#f92672">.</span>print_v2    <span style="color:#75715e">#=&gt;2</span>
+</code></pre></div><p>如果觉得全局变量无法控制，那么可以使用顶级实例变量，这样只要main对象扮演self对象就可以访问，而当其他对象成为self时，就不能够看见顶级实例变量了。但是这种安全性也是有限的。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">@var <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;The top-level @var&#34;</span>
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">my_method</span>
+	@var
+<span style="color:#66d9ef">end</span>
+
+my_method		<span style="color:#75715e"># =&gt; &#34;The top-level @var&#34;，因为这时的self还是main</span>
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyClass</span>
+	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">my_method</span>
+		@var <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;This is not the top-level @var!&#34;</span>
+	<span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><h1 id="作用域门与扁平化作用域">作用域门与扁平化作用域</h1>
+<p>Ruby中程序会在三个地方关闭前一个作用域，同时打开一个新作用域：</p>
+<ul>
+<li>类定义</li>
+<li>模块定义</li>
+<li>方法</li>
+</ul>
+<p>有时候会想要知道怎么才能让绑定穿越作用域门：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">my_var <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Success&#34;</span>
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyClass</span>
+	<span style="color:#75715e"># 希望在这里打印 my_var</span>
+	
+	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">my_method</span>
+		<span style="color:#75715e"># ...还有这里</span>
+	<span style="color:#66d9ef">end</span>
+	
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>class是作用域门，我们能想的就是用非作用域门，比如方法调用来代替作用域门。从Ruby文档可以知道(书上写的，我就查看了一下文档)</p>
+<blockquote>
+<p>Creates a new anonymous (unnamed) class with the given superclass (or Object if no parameter is given). You can give a class a name by assigning the class object to a constant.
+If a block is given, it is passed the class object, and the block is evaluated in the context of this class using class_eval.</p>
+</blockquote>
+<p>也就是说Class.new可以用来达到跟class关键字一样的效果，但是它是方法调用，不会造成作用域分隔。类似的，可以使用动态方法来代替def关键字：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">my_var <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Success&#34;</span>
+
+<span style="color:#66d9ef">MyClass</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">Class</span><span style="color:#f92672">.</span>new <span style="color:#66d9ef">do</span>
+	
+	puts <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">#{</span>my_var<span style="color:#e6db74">}</span><span style="color:#e6db74"> in the class definition!&#34;</span>
+	
+	define_method <span style="color:#e6db74">:my_method</span> <span style="color:#66d9ef">do</span>
+		puts <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">#{</span>my_var<span style="color:#e6db74">}</span><span style="color:#e6db74"> in the method!&#34;</span>
+	<span style="color:#66d9ef">end</span>
+	
+<span style="color:#66d9ef">end</span>
+
+</code></pre></div><p>这种使用方法调用来代替作用域门的方法，称为扁平化作用域。</p>
+<h2 id="共享作用域">共享作用域</h2>
+<p>有了扁平作用域之后，就拥有了控制作用域的能力。假如想在一组方法之间共享一个变量而不希望其他方法能访问这个变量，就可以把这个方法定义在那个变量所在的扁平作用域中。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">define_methods</span>
+  shared <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+  <span style="color:#66d9ef">Kernel</span><span style="color:#f92672">.</span>send <span style="color:#e6db74">:define_method</span>, <span style="color:#e6db74">:counter</span> <span style="color:#66d9ef">do</span>
+    shared
+  <span style="color:#66d9ef">end</span>
+  <span style="color:#66d9ef">Kernel</span><span style="color:#f92672">.</span>send <span style="color:#e6db74">:define_method</span>, <span style="color:#e6db74">:inc</span> <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>x<span style="color:#f92672">|</span>
+    shared <span style="color:#f92672">+=</span> x
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+
+define_methods   
+</code></pre></div><p>这个例子定义了两个内核方法，还使用动态派发来访问Kernel的私有方法define_method。现在counter和inc方法都能看到shared变量，但是其他方法却看不到它。</p>
+<p>通过作用域门、扁平作用域和共享作用域之后，就可以在任何地方看到希望看到的变量了。</p>
+<h1 id="instance_eval方法">instance_eval方法</h1>
+<p>instance_eval是BasicObject类的方法，它将在一个对象的上下文中执行块，也可以看到在代码块中变量定义时的绑定，就像下面代码中的v一样。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyClass</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">initialize</span>
+    @v <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+
+obj <span style="color:#f92672">=</span> <span style="color:#66d9ef">MyClass</span><span style="color:#f92672">.</span>new
+
+obj<span style="color:#f92672">.</span>instance_eval <span style="color:#66d9ef">do</span>
+  @v      <span style="color:#75715e"># =&gt; 1</span>
+<span style="color:#66d9ef">end</span>
+
+v<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+obj<span style="color:#f92672">.</span>instance_eval { @v <span style="color:#f92672">=</span> v}
+obj<span style="color:#f92672">.</span>instance_eval { @v }    <span style="color:#75715e"># =&gt; 2</span>
+</code></pre></div><p>传递给instance_eval的代码块被称为上下文探针，因为这些代码块对对象进行操作。</p>
+<h2 id="instance_exec方法">instance_exec方法</h2>
+<p>instance_exec方法与instance_eval方法类似，但是它还允许传入参数。
+实例变量是依赖于当前对象self的，所以即使使用上下文探针，当instance_eval方法把接收者变为当前对象self的时候，调用者的实例变量就落在作用域范围外面了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">A</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">initialize</span>
+    @x <span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">B</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">twisted_method</span>
+    @y <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+    A<span style="color:#f92672">.</span>new<span style="color:#f92672">.</span>instance_eval { <span style="color:#e6db74">&#34;@x: </span><span style="color:#e6db74">#{</span>@x<span style="color:#e6db74">}</span><span style="color:#e6db74">, @y: </span><span style="color:#e6db74">#{</span>@y<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> }
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+
+B<span style="color:#f92672">.</span>new<span style="color:#f92672">.</span>twisted_method      <span style="color:#75715e"># =&gt; &#34;@x: 1, @y: &#34;</span>
+</code></pre></div><p>在这里@y就因为在作用域外而被当成未定义的nil了。为了把@y放在一个作用域里面，可以使用instance_exec方法传递值：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">A</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">initialize</span>
+    @x <span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">B</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">twisted_method</span>
+    @y <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+    A<span style="color:#f92672">.</span>new<span style="color:#f92672">.</span>instance_exec(@y) {<span style="color:#f92672">|</span>y<span style="color:#f92672">|</span> <span style="color:#e6db74">&#34;@x: </span><span style="color:#e6db74">#{</span>@x<span style="color:#e6db74">}</span><span style="color:#e6db74">, @y: </span><span style="color:#e6db74">#{</span>y<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> }
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+
+p B<span style="color:#f92672">.</span>new<span style="color:#f92672">.</span>twisted_method      <span style="color:#75715e"># =&gt; &#34;@x: 1, @y: 2&#34;</span>
+</code></pre></div><h2 id="洁净室">洁净室</h2>
+<p>如果只想要一个用来执行块的环境，那么就不应该有任何方法或变量，以免和块中的方法/变量产生冲突，因此，BasicObject类的实例通常充当洁净室，几乎不带有任何方法。在这样的洁净室中，一些像String的常量都必须用到绝对路径::String。</p>
+<p>#可调用对象
+代码块的机制是：“打包，调用”，而在Ruby中至少还有三种方法可以打包代码：</p>
+<ul>
+<li>使用proc，它是由块转换而来的对象</li>
+<li>使用lambda，它是proc的变种</li>
+<li>使用方法</li>
+</ul>
+<h2 id="proc对象">Proc对象</h2>
+<p>如果我们想要存储一段代码怎么办呢？代码块并不是对象，所以不能赋给变量。为了解决这个问题，Ruby提供了名为Proc的类。我们通过可以把代码传给Proc.new来创建一个Proc，以后就可以用Proc#call来执行这个代码块了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">inc <span style="color:#f92672">=</span> <span style="color:#66d9ef">Proc</span><span style="color:#f92672">.</span>new {<span style="color:#f92672">|</span>x<span style="color:#f92672">|</span> x<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span> }
+inc<span style="color:#f92672">.</span>call(<span style="color:#ae81ff">2</span>)			<span style="color:#75715e"># =&gt; 3</span>
+</code></pre></div><p>这样就可以达到延迟执行的效果</p>
+<p>其他创建proc的方法：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#75715e"># 使用lambda</span>
+dec <span style="color:#f92672">=</span> lambda { <span style="color:#f92672">|</span>x<span style="color:#f92672">|</span> x<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span> }
+dec<span style="color:#f92672">.</span>class			<span style="color:#75715e"># =&gt; Proc</span>
+dec<span style="color:#f92672">.</span>call(<span style="color:#ae81ff">2</span>)
+
+<span style="color:#75715e"># 使用lambda操作符</span>
+p <span style="color:#f92672">=</span> <span style="color:#f92672">-&gt;</span>(x) { x<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span> }
+
+<span style="color:#75715e">#使用&amp;操作符，在下一段讲解</span>
+
+</code></pre></div><h3 id="操作符">&amp;操作符</h3>
+<p>在大多数情况下，传递给一个方法的代码块可以通过yield直接运行，就像一个匿名参数一样。但是在下面两种情况下就力不从心了，因为要实现这两个需求势必要求代码块有自己的名字：</p>
+<ul>
+<li>把代码块传递给另外一个方法/代码块</li>
+<li>把代码块转换成Proc</li>
+</ul>
+<p>要将代码块附加到一个绑定上，可以通过给这个方法添加一个特殊的参数，它必须是参数列表的最后一个并且以&amp;开头。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">math</span>(a, b)
+  <span style="color:#66d9ef">yield</span>(a, b)
+<span style="color:#66d9ef">end</span>
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">do_math</span>(a, b, <span style="color:#f92672">&amp;</span>operation)
+  math(a, b, <span style="color:#f92672">&amp;</span>operation)	<span style="color:#75715e">#将代码块传递给了另一个方法</span>
+<span style="color:#66d9ef">end</span>
+
+do_math(<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>){<span style="color:#f92672">|</span>x,y<span style="color:#f92672">|</span> x<span style="color:#f92672">*</span>y}  <span style="color:#75715e"># =&gt; 6，这里的代码块就是&amp;operation参数</span>
+</code></pre></div><p>&amp;符号的意思就是：这是一个Proc对象，我想把它当成代码块来使用。去掉&amp;符号之后，就能再次得到一个Proc对象。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">math</span>(a, b)
+  <span style="color:#66d9ef">yield</span>(a, b)
+<span style="color:#66d9ef">end</span>
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">do_math</span>(a, b, <span style="color:#f92672">&amp;</span>operation)
+  math(a, b, <span style="color:#f92672">&amp;</span>operation)
+  operation<span style="color:#f92672">.</span>class         <span style="color:#75715e"># =&gt; Proc</span>
+  operation<span style="color:#f92672">.</span>call(<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>)     <span style="color:#75715e"># =&gt; 2</span>
+<span style="color:#66d9ef">end</span>
+
+do_math(<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>){<span style="color:#f92672">|</span>x,y<span style="color:#f92672">|</span> x<span style="color:#f92672">*</span>y}  <span style="color:#75715e"># =&gt; 6</span>
+</code></pre></div><h2 id="proc与lambda的对比">Proc与Lambda的对比</h2>
+<p>用lambda方法创建的Proc与其他方式创建的Proc有一些细微却重要的差别。用lambda方法(包括&rdquo;-&gt;&quot;操作符)创建的Proc称为lambda，而其他方式创建的称为proc。这里面有很多特例以及规则，下面是一些大概：</p>
+<h3 id="不同的return含义">不同的return含义</h3>
+<p>在lambda中，return仅仅表示从lambda中返回，而在proc中则表示从定义proc的作用域中返回。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#75715e">#lambda的return </span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">double</span>(callable_obj)
+  callable_obj<span style="color:#f92672">.</span>call() <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>
+<span style="color:#66d9ef">end</span>
+
+l <span style="color:#f92672">=</span> lambda{ <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">10</span> }
+double(l)   <span style="color:#75715e"># =&gt; 20</span>
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">another_double</span>()
+  l <span style="color:#f92672">=</span> <span style="color:#66d9ef">Proc</span><span style="color:#f92672">.</span>new{ <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">10</span> }
+  result <span style="color:#f92672">=</span> l<span style="color:#f92672">.</span>call()
+  result <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>
+<span style="color:#66d9ef">end</span>
+
+
+another_double  <span style="color:#75715e"># =&gt; 10</span>
+
+</code></pre></div><p>而像下面的代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">another_double</span>(callable_obj)
+  callable_obj<span style="color:#f92672">.</span>call <span style="color:#f92672">*</span><span style="color:#ae81ff">2</span>
+<span style="color:#66d9ef">end</span>
+
+p <span style="color:#f92672">=</span> <span style="color:#66d9ef">Proc</span><span style="color:#f92672">.</span>new { <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">10</span> }
+another_double(p)	<span style="color:#75715e"># =&gt; LocalJumpError</span>
+
+</code></pre></div><p>因为上面的程序试图从定义p的作用域，也就是顶级作用域返回，而顶级作用域不能返回，所以就失败了，如果不使用return就不会出现这样的问题。</p>
+<h3 id="proclambda和参数数量">Proc、Lambda和参数数量</h3>
+<p>在参数数量的问题上，lambda的适应能力比proc以及普通的代码块差。如果调用lambda时参数数量不对，就会抛出ArgumentError错误，而proc则会把传来的参数调整成期望的参数形式。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">p <span style="color:#f92672">=</span> <span style="color:#66d9ef">Proc</span><span style="color:#f92672">.</span>new {<span style="color:#f92672">|</span>a,b<span style="color:#f92672">|</span> <span style="color:#f92672">[</span>a, b<span style="color:#f92672">]</span>}
+p<span style="color:#f92672">.</span>call(<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">3</span>) 	<span style="color:#75715e"># =&gt; [1, 2]</span>
+p<span style="color:#f92672">.</span>call(<span style="color:#ae81ff">1</span>)			<span style="color:#75715e"># =&gt; [1, nil]</span>
+</code></pre></div><h2 id="method对象">Method对象</h2>
+<p>通过Kernel.method方法，可以获得一个用Method对象表示的方法，并在以后用Method#call进行调用。还可以使用Kernel#sinleton_method把单例方法名转换成Method对象</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyClass</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">initialize</span>(value)
+    @x <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+  <span style="color:#66d9ef">end</span>
+
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">my_method</span>
+    @x
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+
+obj <span style="color:#f92672">=</span> <span style="color:#66d9ef">MyClass</span><span style="color:#f92672">.</span>new(<span style="color:#ae81ff">1</span>)
+m <span style="color:#f92672">=</span> obj<span style="color:#f92672">.</span>method <span style="color:#e6db74">:my_method</span>
+
+m<span style="color:#f92672">.</span>call    <span style="color:#75715e"># =&gt; 1</span>
+</code></pre></div><p>Method对象类似于Proc和lambda对象，可以通过Method#to_proc方法转换成Proc对象，也可以用define_method方法把代码块转换成方法</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">define_method(<span style="color:#e6db74">:print_m</span>, <span style="color:#66d9ef">Proc</span><span style="color:#f92672">.</span>new {<span style="color:#f92672">|</span>x<span style="color:#f92672">|</span> p x})
+
+print_m <span style="color:#e6db74">&#39;aaa&#39;</span>
+</code></pre></div><p>Method对象和lambda/Proc之间有一个重要的区别：lambda可以看到定义它的作用域，而Method对象只能看到自身的定义域。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">aa <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;aaa&#39;</span>
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">my_method</span>(str)
+  aa <span style="color:#f92672">=</span> str
+<span style="color:#66d9ef">end</span>
+my_m <span style="color:#f92672">=</span> method <span style="color:#e6db74">:my_method</span>
+
+l <span style="color:#f92672">=</span> lambda{<span style="color:#f92672">|</span>str<span style="color:#f92672">|</span> aa <span style="color:#f92672">=</span> str}
+
+proc <span style="color:#f92672">=</span> <span style="color:#66d9ef">Proc</span><span style="color:#f92672">.</span>new {<span style="color:#f92672">|</span>str<span style="color:#f92672">|</span> aa <span style="color:#f92672">=</span> str}
+
+
+my_m<span style="color:#f92672">.</span>call <span style="color:#e6db74">&#39;bbb&#39;</span>
+p aa    <span style="color:#75715e"># =&gt; aaa</span>
+
+l<span style="color:#f92672">.</span>call <span style="color:#e6db74">&#39;ccc&#39;</span>
+p aa    <span style="color:#75715e"># =&gt; ccc</span>
+
+
+proc<span style="color:#f92672">.</span>call <span style="color:#e6db74">&#39;ddd&#39;</span>
+p aa    <span style="color:#75715e"># =&gt; ddd</span>
+</code></pre></div><h3 id="自由方法">自由方法</h3>
+<p>自由方法是从类/模块中脱离的方法，可以通过调用Method#unbind或者Module#instance_method方法来获得一个自由方法(类名是UnboundMethod)。</p>
+<p>UnboundMethod不能调用，但是可以通过UnboundMethod#bind或者Module#define_method(需要动态派发，因为是私有方法)把它自己绑定到一个对象上。从某一个类中分离出来的UnboundMethod对象只能被绑定到该类及其子类对象上，不过从某个模块中分离出来的UnboundMethod在Ruby2.0之后不受这个限制。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyClass</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">initialize</span>(value)
+    @x <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+  <span style="color:#66d9ef">end</span>
+
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">my_method</span>
+    <span style="color:#ae81ff">12</span>
+  <span style="color:#66d9ef">end</span>
+
+<span style="color:#66d9ef">end</span>
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyClassSon</span> <span style="color:#f92672">&lt;</span> <span style="color:#66d9ef">MyClass</span>
+
+<span style="color:#66d9ef">end</span>
+
+m <span style="color:#f92672">=</span> <span style="color:#66d9ef">MyClass</span><span style="color:#f92672">.</span>new(<span style="color:#ae81ff">1</span>)<span style="color:#f92672">.</span>method <span style="color:#e6db74">:my_method</span>
+m<span style="color:#f92672">.</span>unbind
+
+<span style="color:#66d9ef">MyClassSon</span><span style="color:#f92672">.</span>send(<span style="color:#e6db74">:define_method</span>,<span style="color:#e6db74">:another_method</span>,m)
+
+
+<span style="color:#66d9ef">module</span> MyModule
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">my_method</span>
+    <span style="color:#ae81ff">42</span>
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+
+unbound <span style="color:#f92672">=</span> <span style="color:#66d9ef">MyModule</span><span style="color:#f92672">.</span>instance_method <span style="color:#e6db74">:my_method</span>
+unbound<span style="color:#f92672">.</span>class     <span style="color:#75715e"># =&gt; UnboundMethod</span>
+
+String<span style="color:#f92672">.</span>send <span style="color:#e6db74">:define_method</span>, <span style="color:#e6db74">:another_method</span>, unbound
+
+<span style="color:#e6db74">&#34;abc&#34;</span><span style="color:#f92672">.</span>another_method  <span style="color:#75715e"># =&gt; 42</span>
+</code></pre></div><p>自由方法在极个别的场景下可以发挥特殊的作用，下面是书上的例子：</p>
+<h4 id="active-support-例子">Active Support 例子</h4>
+<p>在有些类库中实现了这样的功能：如果我们想在引用定义在某个文件中的常量时，自动加载该文件，这个自动加载系统中包含了一个Loadable模块，重新定义了标准的Kernel#load方法。有时我们希望消除自动加载功能，也就是使用标准的Kernel#load方法。但是Ruby中没办法将Loadable从祖先链中去除，但是却可以通过自由方法解决这个问题：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">module</span> Loadable
+	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">self</span><span style="color:#f92672">.</span><span style="color:#a6e22e">exclude</span>(base)
+		base<span style="color:#f92672">.</span>class_eval {define_method(<span style="color:#e6db74">:load</span>, <span style="color:#66d9ef">Kernel</span><span style="color:#f92672">.</span>instance_method(<span style="color:#e6db74">:load</span>))}
+	<span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyClass</span>
+	<span style="color:#66d9ef">include</span> <span style="color:#66d9ef">Loadable</span>
+	exclude(<span style="color:#66d9ef">MyClass</span>)
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>这样就会把Kernel#load拷贝到MyClass类中，从而让这个拷贝在祖先链中先于Loadable#load。</p>
+<p>这是一个相当冷门的情况，其实大多数情况下自由方法都是用不着的+_+</p>
+<h1 id="理解下面代码">理解下面代码</h1>
+<p>下面的一段代码是编写DSL的小测验中的一段代码，理解了它应该就差不多能理解那段代码了~</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">lambda{
+  setups <span style="color:#f92672">=</span> <span style="color:#f92672">[]</span>
+  <span style="color:#66d9ef">Kernel</span><span style="color:#f92672">.</span>send <span style="color:#e6db74">:define_method</span>, <span style="color:#e6db74">:setup</span> <span style="color:#66d9ef">do</span> <span style="color:#f92672">|&amp;</span>block<span style="color:#f92672">|</span>
+    setups <span style="color:#f92672">&lt;&lt;</span> block
+  <span style="color:#66d9ef">end</span>
+
+  <span style="color:#66d9ef">Kernel</span><span style="color:#f92672">.</span>send <span style="color:#e6db74">:define_method</span> , <span style="color:#e6db74">:each_setup</span> <span style="color:#66d9ef">do</span> <span style="color:#f92672">|&amp;</span>block<span style="color:#f92672">|</span>
+    setups<span style="color:#f92672">.</span>each <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>setup<span style="color:#f92672">|</span>
+      block<span style="color:#f92672">.</span>call setup
+    <span style="color:#66d9ef">end</span>
+  <span style="color:#66d9ef">end</span>
+
+}<span style="color:#f92672">.</span>call
+
+
+setup <span style="color:#66d9ef">do</span>
+  puts <span style="color:#e6db74">&#34;initialize sky&#34;</span>
+<span style="color:#66d9ef">end</span>
+
+each_setup <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>setup<span style="color:#f92672">|</span>
+  setup<span style="color:#f92672">.</span>call
+<span style="color:#66d9ef">end</span>
+
+</code></pre></div><p>这里的定义的each_setup代码段中有参数&amp;block,而代码段内部又嵌套了一个带参数的代码段。</p>
+<p>下面来抽丝剥茧，其实最后的</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">define_method(<span style="color:#e6db74">:each_method</span>, <span style="color:#66d9ef">Proc</span><span style="color:#f92672">.</span>new {<span style="color:#f92672">|</span>setup<span style="color:#f92672">|</span> block<span style="color:#f92672">.</span>call setup})
+</code></pre></div><p>就是把setup当做block的参数来调用block方法。
+那么再把最后的调用处代码代进去，就是把</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">define_method(<span style="color:#e6db74">:m</span>, <span style="color:#66d9ef">Proc</span><span style="color:#f92672">.</span>new{<span style="color:#f92672">|</span>x<span style="color:#f92672">|</span> x<span style="color:#f92672">.</span>call})
+</code></pre></div><p>代入each_setup，效果就是：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">each_setup</span>
+	setups<span style="color:#f92672">.</span>each <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>setup<span style="color:#f92672">|</span>
+		m<span style="color:#f92672">.</span>call setup
+	<span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+
+<span style="color:#75715e">#把setup放进m的内部展开也就是</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">each_setup</span>
+	setups<span style="color:#f92672">.</span>each <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>setup<span style="color:#f92672">|</span>
+		setup<span style="color:#f92672">.</span>call
+	<span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div></article>
+    </section>
+
+    <footer class="ui attached segment dream-tags">
+      
+        
+          <a class="ui label" href="/tags/ruby" title="Ruby">Ruby</a>
+        
+          <a class="ui label" href="/tags/%E7%AC%94%E8%AE%B0" title="笔记">笔记</a>
+        
+      
+      <div
+        class="ui label"
+        style="float: right; background: #1b1c1d !important; cursor: pointer;"
+        onclick="savePostAsImg()">
+        <i class="save icon"></i> Save as image
+      </div>
+    </footer>
+
+    
+      <footer class="ui attached segment">
+        <strong>欢迎通过<a href="mailto:shen_jianan@foxmail.com">邮箱</a>(shen_jianan@foxmail.com)探讨问题</strong> <br/><br/><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可。 <br />
+      </footer>
+    
+
+    
+
+  </div>
+  <div class="sixteen wide mobile sixteen wide tablet four wide computer column">
+    <article class="dream-header">
+  <section class="ui top attached center aligned segment">
+    <div class="ui small circular image">
+      
+        <img src="https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/avatars/totoro3.jpeg?x-oss-process=style/compress">
+      
+    </div>
+
+    <h1 class="ui medium header">Shen Jianan&#39;s blog<div class="sub header" style="margin-top: 0.5rem;">Freedom as Autonomy</div>
+    </h1>
+
+    <div class="ui horizontal list">
+      
+      <a class="item" href="/posts">
+        <i class="archive icon" title="Archives"></i>
+      </a>
+      
+      <a class="item" href="/tags">
+        <i class="tags icon" title="All Tags"></i>
+      </a>
+      <a class="item" href="/categories">
+        <i class="th list icon" title="All Categories"></i>
+      </a>
+    </div>
+  </section>
+
+  
+  <section class="ui attached center aligned segment dream-tags">
+    
+      <a class="ui label" href="/tags/hbase" title="hbase">hbase</a>
+    
+      <a class="ui label" href="/tags/java" title="java">java</a>
+    
+      <a class="ui label" href="/tags/redis" title="redis">redis</a>
+    
+      <a class="ui label" href="/tags/ruby" title="ruby">ruby</a>
+    
+      <a class="ui label" href="/tags/%E4%B9%A0%E9%A2%98" title="习题">习题</a>
+    
+      <a class="ui label" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F" title="分布式">分布式</a>
+    
+      <a class="ui label" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0" title="机器学习">机器学习</a>
+    
+      <a class="ui label" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C" title="神经网络">神经网络</a>
+    
+      <a class="ui label" href="/tags/%E7%AC%94%E8%AE%B0" title="笔记">笔记</a>
+    
+      <a class="ui label" href="/tags/%E7%AE%97%E6%B3%95" title="算法">算法</a>
+    
+      <a class="ui label" href="/tags/%E7%AE%97%E6%B3%95%E5%BC%95%E6%93%8E" title="算法引擎">算法引擎</a>
+    
+      <a class="ui label" href="/tags/%E8%AE%BA%E6%96%87" title="论文">论文</a>
+    
+  </section>
+  
+
+  
+  <section class="ui attached segment dream-categories">
+    <div class="ui accordion">
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/java" class="item">java</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/java/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" class="item">Java并发编程实战 读书笔记</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/redis" class="item">redis</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E4%BA%8B%E4%BB%B6/" class="item">Redis设计与实现——事件</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0aof%E6%8C%81%E4%B9%85%E5%8C%96/" class="item">Redis设计与实现——AOF持久化</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0rdb%E6%8C%81%E4%B9%85%E5%8C%96/" class="item">Redis设计与实现——RDB持久化</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%97%E8%A1%A8%E4%B8%8E%E7%BB%93%E6%9E%84%E4%BD%93/" class="item">Redis设计与实现——数据库列表与结构体</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0sds%E5%93%88%E5%B8%8C%E8%A1%A8/" class="item">Redis设计与实现——SDS哈希表</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0sds%E5%AE%9E%E7%8E%B0%E4%B8%8E%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB/" class="item">Redis设计与实现——SDS实现与代码解读</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/ruby" class="item">ruby</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-5/" class="item">Ruby元编程 星期五</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-4/" class="item">Ruby元编程 星期四</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-3/" class="item">Ruby元编程 星期三</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-2/" class="item">Ruby元编程 星期二</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-1/" class="item">Ruby元编程 星期一</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/%E4%B9%A0%E9%A2%98" class="item">习题</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/exercises/2020-11-07/" class="item">习题2020-11-07</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F" class="item">分布式</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/distributed/raft%E6%A6%82%E8%AE%BA/" class="item">Raft概论</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/distributed/bigtable%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-%E4%B8%AA%E4%BA%BA%E7%BF%BB%E8%AF%91/" class="item">BigTable论文阅读&amp;个人翻译</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/distributed/hbase%E5%AE%9E%E6%88%98%E9%9A%8F%E7%AC%94%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C/" class="item">《HBase实战》随笔——数据操作</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0" class="item">机器学习</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E4%BC%98%E5%8C%96%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%A1%A8%E7%8E%B0%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E6%B3%95/" class="item">优化神经网络表现的几种方法</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E8%83%8C%E5%90%8E%E7%9A%84%E5%9B%9B%E4%B8%AA%E5%9F%BA%E6%9C%AC%E7%AD%89%E5%BC%8F/" class="item">反向传播背后的四个基本等式</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" class="item">神经网络基础知识</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-ex6/" class="item">机器学习 ex6</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E6%A0%B8%E5%87%BD%E6%95%B0/" class="item">核函数</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E8%AE%A1%E7%AE%97%E8%BF%87%E7%A8%8B%E7%AC%94%E8%AE%B0/" class="item">神经网络反向传播计算过程笔记</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/%E7%AE%97%E6%B3%95" class="item">算法</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/algorithm/%E5%86%8D%E6%8E%A2%E6%8E%92%E5%BA%8F/" class="item">再探排序</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/algorithm/%E4%BA%8C%E5%8F%89%E6%A0%91-%E7%BA%A2%E9%BB%91%E6%A0%91%E5%B0%8F%E7%BB%93/" class="item">简单搜索二叉树&amp;红黑树小结</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/algorithm/%E7%BA%BF%E6%80%A7%E6%97%B6%E9%97%B4%E6%8E%92%E5%BA%8F/" class="item">线性时间排序</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/algorithm/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E5%B0%8F%E7%BB%93/" class="item">快速排序算法小结</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/%E7%AE%97%E6%B3%95%E5%BC%95%E6%93%8E" class="item">算法引擎</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/algorithmengine/faiss%E5%90%91%E9%87%8F%E5%8F%AC%E5%9B%9E%E5%BC%95%E6%93%8E%E5%A6%82%E4%BD%95%E5%81%9A%E5%88%B0%E5%BF%AB%E9%80%9F%E6%9F%A5%E6%89%BE%E6%9C%80%E8%BF%91%E9%82%BB/" class="item">Faiss向量召回引擎如何做到快速查找最近邻</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+    </div>
+  </section>
+  
+
+  <section class="ui attached segment header-socials">
+    <nav class="ui secondary menu dream-menu dream-socials">
+  
+    <div class="item">
+      <i class=" mail icon" title="email"></i> 
+      <a href="mailto:shen_jianan@foxmail.com">
+        shen_jianan@foxmail.com
+      </a>
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</nav>
+
+  </section>
+
+  <section class="ui bottom attached center aligned segment">
+    
+      <p>© 2015 - 2020 Shen Jianan的随缘更新</p>
+    
+
+    <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</p>
+  </section>
+</article>
+
+
+  </div>
+</div>
+
+        </section>
+        <section class="back">
+          
+<nav class="ui secondary menu dream-menu">
+
+  <div class="item">
+    <i class="large link bullseye icon dream-flip-toggle" title="Flip it!"></i>
+  </div>
+  <div class="item">
+    <i class="large link home icon" title="Home" onclick="window.location.href = 'http:\/\/www.shenjianan.top\/'"></i>
+  </div>
+  <div class="item">
+    <i class="large link icon theme-switch" onclick="themeSwitch()"></i>
+  </div>
+</nav>
+
+          <div class="ui centered relaxed grid dream-grid dream-back">
+  
+    <section class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+      <article>
+        <div class="ui top attached segment">
+          <h3 class="ui header">About Me</h3>
+        </div>
+        <div class="ui attached segment markdown-body">
+          <h4 id="201802至今emsp杭州嘉云数据-算法引擎">2018.02至今 杭州嘉云数据 算法引擎</h4>
+<h4 id="20176-201712emsp菜网络-工智能部-算法引擎">2017.6-2017.12 菜⻦网络-⼈工智能部-算法引擎</h4>
+<h4 id="201609-201806emsp南京大学研究生">2016.09-2018.06 南京大学研究生</h4>
+<h4 id="201507-201509emsp阿里巴巴-icbu-实习">2015.07-2015.09 阿里巴巴-ICBU-实习</h4>
+<h4 id="201209-201606emsp南京大学本科">2012.09-2016.06 南京大学本科</h4>
+
+        </div>
+      </article>
+    </section>
+  
+
+  <section class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+    <article>
+      <div class="ui top attached segment">
+        <h3 class="ui header">Social Links</h3>
+      </div>
+      <div class="ui attached segment">
+        <nav class="ui secondary menu dream-menu dream-socials">
+  
+    <div class="item">
+      <i class="large mail icon" title="email"></i> 
+      <a href="mailto:shen_jianan@foxmail.com">
+        shen_jianan@foxmail.com
+      </a>
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</nav>
+
+      </div>
+    </article>
+  </section>
+
+  <section class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+    
+      <footer class="ui segment">
+        <strong>欢迎通过<a href="mailto:shen_jianan@foxmail.com">邮箱</a>(shen_jianan@foxmail.com)探讨问题</strong> <br/><br/><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可。 <br />
+      </footer>
+    
+  </section>
+
+  
+  
+</div>
+
+        </section>
+      </div>
+    </div>
+
+    <script src="/js/jquery.min.js"></script>
+<script src="/js/semantic.min.js"></script>
+<script src="/js/imagesloaded.pkgd.min.js"></script>
+<script src="/js/masonry.pkgd.min.js"></script>
+<script src="/js/nav.js"></script>
+<script src="/js/header.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/theme.js"></script>
+<script src="/js/html2canvas.min.js"></script>
+
+
+
+  </body>
+</html>

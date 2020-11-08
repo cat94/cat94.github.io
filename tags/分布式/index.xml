@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>分布式 on Shen Jianan的随缘更新</title>
+    <link>http://www.shenjianan.top/tags/%E5%88%86%E5%B8%83%E5%BC%8F/</link>
+    <description>Recent content in 分布式 on Shen Jianan的随缘更新</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cmn-Hans</language>
+    <copyright>&lt;strong&gt;欢迎通过&lt;a href=&#34;mailto:shen_jianan@foxmail.com&#34;&gt;邮箱&lt;/a&gt;(shen_jianan@foxmail.com)探讨问题&lt;/strong&gt; &lt;br/&gt;&lt;br/&gt;&lt;br /&gt;本作品采用&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议&lt;/a&gt;进行许可。 &lt;br /&gt;</copyright>
+    <lastBuildDate>Thu, 18 Jun 2020 14:33:37 +0800</lastBuildDate>
+    
+	<atom:link href="http://www.shenjianan.top/tags/%E5%88%86%E5%B8%83%E5%BC%8F/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Raft概论</title>
+      <link>http://www.shenjianan.top/posts/distributed/raft%E6%A6%82%E8%AE%BA/</link>
+      <pubDate>Thu, 18 Jun 2020 14:33:37 +0800</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/distributed/raft%E6%A6%82%E8%AE%BA/</guid>
+      <description>&lt;p&gt;分布式系统很大程度上解决了我们在单机系统上遇到的可靠性和扩展性问题。为了解决扩展性，引入了分片；为了解决可靠性，引入了副本。而引入的这两个机制，又带来了更多需要解决的刁钻问题。&lt;/p&gt;
+&lt;p&gt;在本篇文章中，笔者对分布式一致性算法Raft进行介绍。由于主要介绍大的结构和流程，所以称为“概论”。如果想要知道更多细节，可以下载参考资料中的内容进行更细致的研究。&lt;/p&gt;
+&lt;p&gt;本文结构：首先简要介绍共识算法可以解决那些问题；接着，对Raft算法的主要流程和数据结构进行概述；对Raft有一个整体印象后，聚焦于选主流程、日志复制中的细节和问题；最后，证明Raft算法的正确性，并描述Raft如何处理成员变更的问题。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>BigTable论文阅读&amp;个人翻译</title>
+      <link>http://www.shenjianan.top/posts/distributed/bigtable%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-%E4%B8%AA%E4%BA%BA%E7%BF%BB%E8%AF%91/</link>
+      <pubDate>Mon, 11 Jan 2016 23:03:00 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/distributed/bigtable%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-%E4%B8%AA%E4%BA%BA%E7%BF%BB%E8%AF%91/</guid>
+      <description>&lt;p&gt;Bigtable是2005年谷歌的论文：《Bigtable: A Distributed Storage System for Structured Data》中介绍的一种分布式存储系统，后来被Hadoop社区实现为HBase。读懂这篇论文，那么理解HBase也就非常容易了。本篇博客略去了性能评估、API和应用实例的部分，只讲比较关键的设计与机制部分。&lt;/p&gt;
+&lt;p&gt;这篇论文在不少的地方已经有人翻译了，我为什么还要再翻译一遍嘞？一是这些都是别人翻译的，可能会有些疏漏(比如这篇厦大数据库实验室的&lt;a href=&#34;https://dblab.xmu.edu.cn/post/google-bigtable/&#34;&gt;翻译&lt;/a&gt;，我在看论文看不懂的时候就会去找它来对照理解，但是对照英文版本就会发现有些地方的翻译是有问题的)，还是看英文原版比较准确地理解意思。另一方面，能够把论文翻译出来，也就说明比较清楚地了解论文的意思了，这也算是一种检验。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>《HBase实战》随笔——数据操作</title>
+      <link>http://www.shenjianan.top/posts/distributed/hbase%E5%AE%9E%E6%88%98%E9%9A%8F%E7%AC%94%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C/</link>
+      <pubDate>Thu, 07 Jan 2016 21:08:35 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/distributed/hbase%E5%AE%9E%E6%88%98%E9%9A%8F%E7%AC%94%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C/</guid>
+      <description>&lt;p&gt;工具的学问总是流于表面，工具内部的艰深又鲜能触及。在eBay实习期间，难免使用到HBase，再加上下季度可能会有这方面的工作，所以看看《HBase实战》学习一下HBase。&lt;/p&gt;
+&lt;p&gt;对于Hadoop、Yarn、HDFS、HBase这些工具，我都还是个彻彻底底的门外汉。笔记不追求记录下方方面面，只求将涉及工作机制的话题进行归纳，本质还是读书笔记，可能还会根据官网上的文档进一步研究完善。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

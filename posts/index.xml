@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Shen Jianan的随缘更新</title>
+    <link>http://www.shenjianan.top/posts/</link>
+    <description>Recent content in Posts on Shen Jianan的随缘更新</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cmn-Hans</language>
+    <copyright>&lt;strong&gt;欢迎通过&lt;a href=&#34;mailto:shen_jianan@foxmail.com&#34;&gt;邮箱&lt;/a&gt;(shen_jianan@foxmail.com)探讨问题&lt;/strong&gt; &lt;br/&gt;&lt;br/&gt;&lt;br /&gt;本作品采用&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议&lt;/a&gt;进行许可。 &lt;br /&gt;</copyright>
+    <lastBuildDate>Sat, 07 Nov 2020 20:16:04 +0800</lastBuildDate>
+    
+	<atom:link href="http://www.shenjianan.top/posts/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>习题2020-11-07</title>
+      <link>http://www.shenjianan.top/posts/exercises/2020-11-07/</link>
+      <pubDate>Sat, 07 Nov 2020 20:16:04 +0800</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/exercises/2020-11-07/</guid>
+      <description>&lt;p&gt;沈亦彤专供，2020/11/07&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Raft概论</title>
+      <link>http://www.shenjianan.top/posts/distributed/raft%E6%A6%82%E8%AE%BA/</link>
+      <pubDate>Thu, 18 Jun 2020 14:33:37 +0800</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/distributed/raft%E6%A6%82%E8%AE%BA/</guid>
+      <description>&lt;p&gt;分布式系统很大程度上解决了我们在单机系统上遇到的可靠性和扩展性问题。为了解决扩展性，引入了分片；为了解决可靠性，引入了副本。而引入的这两个机制，又带来了更多需要解决的刁钻问题。&lt;/p&gt;
+&lt;p&gt;在本篇文章中，笔者对分布式一致性算法Raft进行介绍。由于主要介绍大的结构和流程，所以称为“概论”。如果想要知道更多细节，可以下载参考资料中的内容进行更细致的研究。&lt;/p&gt;
+&lt;p&gt;本文结构：首先简要介绍共识算法可以解决那些问题；接着，对Raft算法的主要流程和数据结构进行概述；对Raft有一个整体印象后，聚焦于选主流程、日志复制中的细节和问题；最后，证明Raft算法的正确性，并描述Raft如何处理成员变更的问题。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Faiss向量召回引擎如何做到快速查找最近邻</title>
+      <link>http://www.shenjianan.top/posts/algorithmengine/faiss%E5%90%91%E9%87%8F%E5%8F%AC%E5%9B%9E%E5%BC%95%E6%93%8E%E5%A6%82%E4%BD%95%E5%81%9A%E5%88%B0%E5%BF%AB%E9%80%9F%E6%9F%A5%E6%89%BE%E6%9C%80%E8%BF%91%E9%82%BB/</link>
+      <pubDate>Sun, 26 Apr 2020 11:32:08 +0800</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/algorithmengine/faiss%E5%90%91%E9%87%8F%E5%8F%AC%E5%9B%9E%E5%BC%95%E6%93%8E%E5%A6%82%E4%BD%95%E5%81%9A%E5%88%B0%E5%BF%AB%E9%80%9F%E6%9F%A5%E6%89%BE%E6%9C%80%E8%BF%91%E9%82%BB/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://github.com/facebookresearch/faiss&#34;&gt;Faiss&lt;/a&gt;是Facebook开源的向量召回引擎，用于寻找与某个向量最相似的N个向量。&lt;/p&gt;
+&lt;p align=&#34;center&#34;&gt;
+&lt;img src=&#34;https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/images/algorithm_engine/faiss/matthijs.png&#34;)&gt;
+&lt;/p&gt;
+&lt;p&gt;Faiss第一次release发布于2018.02.23，但其作者Matthijs在加入Facebook之前的2011年就已经发表了一篇&lt;a href=&#34;https://lear.inrialpes.fr/pubs/2011/JDS11/jegou_searching_with_quantization.pdf&#34;&gt;关于最近邻搜索的论文&lt;/a&gt;，Faiss就是基于此论文思想实现的。读懂了这篇论文，Faiss的索引方式就清楚了。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>优化神经网络表现的几种方法</title>
+      <link>http://www.shenjianan.top/posts/machinelearning/%E4%BC%98%E5%8C%96%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%A1%A8%E7%8E%B0%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E6%B3%95/</link>
+      <pubDate>Sat, 05 Nov 2016 17:32:12 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/machinelearning/%E4%BC%98%E5%8C%96%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%A1%A8%E7%8E%B0%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E6%B3%95/</guid>
+      <description>&lt;p&gt;神经网络优化的多种途径&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>反向传播背后的四个基本等式</title>
+      <link>http://www.shenjianan.top/posts/machinelearning/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E8%83%8C%E5%90%8E%E7%9A%84%E5%9B%9B%E4%B8%AA%E5%9F%BA%E6%9C%AC%E7%AD%89%E5%BC%8F/</link>
+      <pubDate>Sat, 05 Nov 2016 17:32:12 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/machinelearning/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E8%83%8C%E5%90%8E%E7%9A%84%E5%9B%9B%E4%B8%AA%E5%9F%BA%E6%9C%AC%E7%AD%89%E5%BC%8F/</guid>
+      <description>&lt;p&gt;再探反向传播神经网络，这是从一个比较有名的线上书&lt;a href=&#34;https://neuralnetworksanddeeplearning.com/index.html&#34;&gt;《Neural Networks and Deep Learning》&lt;/a&gt;上看到并做的笔记。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>神经网络基础知识</title>
+      <link>http://www.shenjianan.top/posts/machinelearning/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</link>
+      <pubDate>Thu, 27 Oct 2016 10:49:52 +0800</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/machinelearning/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</guid>
+      <description>&lt;p&gt;神经网络基础认识&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Redis设计与实现——事件</title>
+      <link>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E4%BA%8B%E4%BB%B6/</link>
+      <pubDate>Thu, 16 Jun 2016 20:34:27 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E4%BA%8B%E4%BB%B6/</guid>
+      <description>&lt;h1 id=&#34;事件&#34;&gt;事件&lt;/h1&gt;
+&lt;p&gt;Redis服务器是事件驱动程序，需要处理两种事件：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;文件事件——服务器与客户端通信产生的事件&lt;/li&gt;
+&lt;li&gt;时间事件——Redis中类似serverCron函数的给定时间点执行的事件&lt;/li&gt;
+&lt;/ol&gt;</description>
+    </item>
+    
+    <item>
+      <title>Redis设计与实现——AOF持久化</title>
+      <link>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0aof%E6%8C%81%E4%B9%85%E5%8C%96/</link>
+      <pubDate>Mon, 13 Jun 2016 20:34:17 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0aof%E6%8C%81%E4%B9%85%E5%8C%96/</guid>
+      <description>&lt;h1 id=&#34;aof持久化&#34;&gt;AOF持久化&lt;/h1&gt;
+&lt;p&gt;RDB持久化通过保存键值对来记录数据库，而AOF则通过保存写命令来记录数据库的。写入的命令有特殊的格式，通过文本格式写入，只是在命令中间增加一些固定的协议分隔符。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Redis设计与实现——RDB持久化</title>
+      <link>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0rdb%E6%8C%81%E4%B9%85%E5%8C%96/</link>
+      <pubDate>Mon, 13 Jun 2016 15:43:12 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0rdb%E6%8C%81%E4%B9%85%E5%8C%96/</guid>
+      <description>&lt;h1 id=&#34;rdb持久化&#34;&gt;RDB持久化&lt;/h1&gt;
+&lt;h2 id=&#34;rdb文件的创建与载入&#34;&gt;RDB文件的创建与载入&lt;/h2&gt;
+&lt;p&gt;SAVE命令会阻塞Redis服务器进程，这期间不能处理任何命令。而BGSAVE会派生一个子进程，由子进程创建RDB文件。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Redis设计与实现——数据库列表与结构体</title>
+      <link>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%97%E8%A1%A8%E4%B8%8E%E7%BB%93%E6%9E%84%E4%BD%93/</link>
+      <pubDate>Sat, 04 Jun 2016 14:38:36 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%97%E8%A1%A8%E4%B8%8E%E7%BB%93%E6%9E%84%E4%BD%93/</guid>
+      <description>&lt;h1 id=&#34;数据库&#34;&gt;数据库&lt;/h1&gt;
+&lt;h2 id=&#34;数据库列表&#34;&gt;数据库列表&lt;/h2&gt;
+&lt;p&gt;redis.h/redisServer是Redis服务器的数据结构，保存所有的服务器状态。&lt;/p&gt;
+&lt;p&gt;一个Redis服务器默认会创建16个数据库，redisServer里面有数据库列表指针和数据库数量的记录。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Redis设计与实现——SDS哈希表</title>
+      <link>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0sds%E5%93%88%E5%B8%8C%E8%A1%A8/</link>
+      <pubDate>Mon, 30 May 2016 21:37:23 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0sds%E5%93%88%E5%B8%8C%E8%A1%A8/</guid>
+      <description>&lt;h1 id=&#34;哈希表&#34;&gt;哈希表&lt;/h1&gt;
+&lt;p&gt;dictht结构体定义了一个哈希表，保存着指向dictEntry的指针的数组。通过使用链表来解决哈希冲突。&lt;/p&gt;
+&lt;p&gt;dict结构体是字典的结构体，每个字典有两个哈希表，便于在rehash的时候依然可以进行遍历操作。dict使用safe值来标记当前是否是安全状态，用table值标记当前被迭代的哈希表号码。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Redis设计与实现——SDS实现与代码解读</title>
+      <link>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0sds%E5%AE%9E%E7%8E%B0%E4%B8%8E%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB/</link>
+      <pubDate>Mon, 30 May 2016 11:52:36 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0sds%E5%AE%9E%E7%8E%B0%E4%B8%8E%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB/</guid>
+      <description>&lt;h1 id=&#34;sds原理&#34;&gt;SDS原理&lt;/h1&gt;
+&lt;p&gt;总体概述：是Redis中可变字符串的数据结构，所有可变的字符串都使用此数据结构。除了被用作字符串，还被用作缓冲区。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>再探排序</title>
+      <link>http://www.shenjianan.top/posts/algorithm/%E5%86%8D%E6%8E%A2%E6%8E%92%E5%BA%8F/</link>
+      <pubDate>Fri, 18 Mar 2016 22:27:53 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/algorithm/%E5%86%8D%E6%8E%A2%E6%8E%92%E5%BA%8F/</guid>
+      <description>&lt;h1 id=&#34;再探排序&#34;&gt;再探排序&lt;/h1&gt;
+&lt;p&gt;记得之前写过一篇关于快排的博客，当时只是写了一个快排的代码片段，加上简单的优化意见——当递归到一定规模的序列时使用插排提升效率、随机选取比较的元。那篇博客是在准备面试时看到网上一些资料而写的简单的笔记。&lt;/p&gt;
+&lt;p&gt;最近在重新读《数据结构与算法分析》，这本书是大二时数据结构课的教材。记得当初上课没有用心学习，最后的成绩也算是勉勉强强八十几分。到现在，对于排序也就记得大体的思想，真正上手写代码却是漏洞百出。现在重新回顾，得到了很多新的感悟，原来像团团迷雾的算法细节也终于清晰起来。本篇博客会对插入排序、希尔排序、快速排序、归并排序的读书体会与收获进行记录。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>BigTable论文阅读&amp;个人翻译</title>
+      <link>http://www.shenjianan.top/posts/distributed/bigtable%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-%E4%B8%AA%E4%BA%BA%E7%BF%BB%E8%AF%91/</link>
+      <pubDate>Mon, 11 Jan 2016 23:03:00 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/distributed/bigtable%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-%E4%B8%AA%E4%BA%BA%E7%BF%BB%E8%AF%91/</guid>
+      <description>&lt;p&gt;Bigtable是2005年谷歌的论文：《Bigtable: A Distributed Storage System for Structured Data》中介绍的一种分布式存储系统，后来被Hadoop社区实现为HBase。读懂这篇论文，那么理解HBase也就非常容易了。本篇博客略去了性能评估、API和应用实例的部分，只讲比较关键的设计与机制部分。&lt;/p&gt;
+&lt;p&gt;这篇论文在不少的地方已经有人翻译了，我为什么还要再翻译一遍嘞？一是这些都是别人翻译的，可能会有些疏漏(比如这篇厦大数据库实验室的&lt;a href=&#34;https://dblab.xmu.edu.cn/post/google-bigtable/&#34;&gt;翻译&lt;/a&gt;，我在看论文看不懂的时候就会去找它来对照理解，但是对照英文版本就会发现有些地方的翻译是有问题的)，还是看英文原版比较准确地理解意思。另一方面，能够把论文翻译出来，也就说明比较清楚地了解论文的意思了，这也算是一种检验。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>《HBase实战》随笔——数据操作</title>
+      <link>http://www.shenjianan.top/posts/distributed/hbase%E5%AE%9E%E6%88%98%E9%9A%8F%E7%AC%94%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C/</link>
+      <pubDate>Thu, 07 Jan 2016 21:08:35 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/distributed/hbase%E5%AE%9E%E6%88%98%E9%9A%8F%E7%AC%94%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C/</guid>
+      <description>&lt;p&gt;工具的学问总是流于表面，工具内部的艰深又鲜能触及。在eBay实习期间，难免使用到HBase，再加上下季度可能会有这方面的工作，所以看看《HBase实战》学习一下HBase。&lt;/p&gt;
+&lt;p&gt;对于Hadoop、Yarn、HDFS、HBase这些工具，我都还是个彻彻底底的门外汉。笔记不追求记录下方方面面，只求将涉及工作机制的话题进行归纳，本质还是读书笔记，可能还会根据官网上的文档进一步研究完善。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Java并发编程实战 读书笔记</title>
+      <link>http://www.shenjianan.top/posts/java/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Sun, 29 Nov 2015 22:28:19 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/java/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</guid>
+      <description>&lt;p&gt;Java并发编程实战——一本近300页的薄书，但是却延宕了相当长一段时间。中间上公开课，转职……注意力完全不在这本书上，到现在也只看了一半。想来应该做个笔记，就先把之前看的一半笔记写上，一并算是复习了。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Ruby元编程 星期五</title>
+      <link>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-5/</link>
+      <pubDate>Mon, 02 Nov 2015 15:44:53 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-5/</guid>
+      <description>&lt;h1 id=&#34;kerneleval&#34;&gt;Kernel#eval&lt;/h1&gt;
+&lt;p&gt;我们已经知道instance_eval和class_eval，现在接触*eval的第三个成员——eval方法。eval方法会直接执行代码字符串。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-ruby&#34; data-lang=&#34;ruby&#34;&gt;array &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+element &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt;
+eval(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;array &amp;lt;&amp;lt; element&amp;#34;&lt;/span&gt;) 	&lt;span style=&#34;color:#75715e&#34;&gt;# =&amp;gt; [10, 20, 30]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+    </item>
+    
+    <item>
+      <title>Ruby元编程 星期四</title>
+      <link>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-4/</link>
+      <pubDate>Wed, 28 Oct 2015 22:14:08 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-4/</guid>
+      <description>&lt;h1 id=&#34;类定义&#34;&gt;类定义&lt;/h1&gt;
+&lt;p&gt;即将走进&amp;quot;Ruby对象模型最深暗的角落&amp;rdquo;&amp;hellip;和Java不同，在Ruby中，定义类实际上就是在运行代码，这种思想催生了1、可以修改类的类宏 2、可以在其他方法前后封装额外代码的环绕别名。当然，因为类不过是增强的模块，所以这些知识也可以应用于模块。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Ruby元编程 星期三</title>
+      <link>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-3/</link>
+      <pubDate>Mon, 26 Oct 2015 20:05:37 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-3/</guid>
+      <description>&lt;h1 id=&#34;代码块&#34;&gt;代码块&lt;/h1&gt;
+&lt;p&gt;块可以用来控制作用域，它只是Ruby中“可调用对象”的一种，还有其他的可调用对象，比如proc和lambda。在这一章将会学习怎样利用这些对象来进行元编程。&lt;/p&gt;
+&lt;p&gt;前面两章的内容跟普通的面向对象没有很大的区别，但是代码块源于函数式编程语言，所以会带有函数式编程独特的思考角度~&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Ruby元编程 星期二</title>
+      <link>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-2/</link>
+      <pubDate>Sat, 24 Oct 2015 23:16:17 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-2/</guid>
+      <description>&lt;h1 id=&#34;解决代码重复&#34;&gt;解决代码重复&lt;/h1&gt;
+&lt;p&gt;在星期二，书中给出了一个关于包装老系统接口造成代码冗余的例子。下面是这个例子，它贯穿了整个章节，集中体现了Ruby道路的优越性+_+&lt;/p&gt;
+&lt;p&gt;有一个老系统，他有很多蹩脚的代码，现在要求系统自动为超过99美元的开销添加标记。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Ruby元编程 星期一</title>
+      <link>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-1/</link>
+      <pubDate>Sat, 24 Oct 2015 19:05:40 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-1/</guid>
+      <description>&lt;h1 id=&#34;转入魔都&#34;&gt;转入魔都&lt;/h1&gt;
+&lt;p&gt;啊哈~自从不做阿里实习生之后，在学校浑浑噩噩过了一周左右，终于又开始找实习~先投了猿题库，无奈要等到十月中旬才能面试，就先面了eBay，没想到还挺顺利地就过了，就这么当着杭州的二房东跑到上海开始实习生涯了~~
+P.S. 6号拿到offer13号入职，到现在才写下这段话的效率也是堪忧啊~&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>机器学习 ex6</title>
+      <link>http://www.shenjianan.top/posts/machinelearning/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-ex6/</link>
+      <pubDate>Fri, 02 Oct 2015 20:36:19 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/machinelearning/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-ex6/</guid>
+      <description>&lt;p&gt;第六次作业是关于支持向量机的一个小练习，借此小练习也巩固一下支持向量机的使用过程。&lt;/p&gt;
+&lt;p&gt;这次作业分为两个部分，第一部分的大致内容是利用支持向量机和多个二维数据集来体验运行SVM和使用高斯核函数的过程。第二部分则是使用支持向量机来构造一个简单的垃圾邮件分类器。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>核函数</title>
+      <link>http://www.shenjianan.top/posts/machinelearning/%E6%A0%B8%E5%87%BD%E6%95%B0/</link>
+      <pubDate>Sun, 27 Sep 2015 19:05:40 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/machinelearning/%E6%A0%B8%E5%87%BD%E6%95%B0/</guid>
+      <description>&lt;p&gt;核函数是支持向量机经常使用的一种度量函数&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>简单搜索二叉树&amp;红黑树小结</title>
+      <link>http://www.shenjianan.top/posts/algorithm/%E4%BA%8C%E5%8F%89%E6%A0%91-%E7%BA%A2%E9%BB%91%E6%A0%91%E5%B0%8F%E7%BB%93/</link>
+      <pubDate>Thu, 24 Sep 2015 10:00:10 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/algorithm/%E4%BA%8C%E5%8F%89%E6%A0%91-%E7%BA%A2%E9%BB%91%E6%A0%91%E5%B0%8F%E7%BB%93/</guid>
+      <description>&lt;p&gt;二叉树是很重要的数据结构，今次的任务是复习一下搜索二叉树和红黑树~主要对应《算法导论》中的《二叉搜索树》和《红黑树》两章。这里的搜索二叉树不是B树，所以插入操作时不需要进行专门的旋转操作。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>线性时间排序</title>
+      <link>http://www.shenjianan.top/posts/algorithm/%E7%BA%BF%E6%80%A7%E6%97%B6%E9%97%B4%E6%8E%92%E5%BA%8F/</link>
+      <pubDate>Wed, 23 Sep 2015 16:23:53 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/algorithm/%E7%BA%BF%E6%80%A7%E6%97%B6%E9%97%B4%E6%8E%92%E5%BA%8F/</guid>
+      <description>&lt;p&gt;任何基于决策树的比较排序在最坏情况下都要经过$\Omega(nlgn)$次比较。因此，任何已知的比较排序最多在常数因子上优于归并排序和堆排序。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>快速排序算法小结</title>
+      <link>http://www.shenjianan.top/posts/algorithm/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E5%B0%8F%E7%BB%93/</link>
+      <pubDate>Tue, 22 Sep 2015 19:03:48 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/algorithm/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E5%B0%8F%E7%BB%93/</guid>
+      <description>&lt;p&gt;快速排序最坏情况下的时间复杂度是$\Theta(n^2)$，但是它的期望时间复杂度是$\Theta(nlogn)$，而且隐含的常数因子非常小。&lt;/p&gt;
+&lt;p&gt;今天的文章复习一下快排的原理和尝试着自己实现一下代码。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>神经网络反向传播计算过程笔记</title>
+      <link>http://www.shenjianan.top/posts/machinelearning/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E8%AE%A1%E7%AE%97%E8%BF%87%E7%A8%8B%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Mon, 21 Sep 2015 16:00:47 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/machinelearning/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E8%AE%A1%E7%AE%97%E8%BF%87%E7%A8%8B%E7%AC%94%E8%AE%B0/</guid>
+      <description>&lt;h1 id=&#34;神经网络示意&#34;&gt;神经网络示意&lt;/h1&gt;
+&lt;p&gt;&lt;img src=&#34;https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/images/machine_learning/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/nueral_network_example.jpg&#34; alt=&#34;神经网络示例图1&#34;&gt;
+&lt;img src=&#34;https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/images/machine_learning/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/nueral_network_example2.jpg&#34; alt=&#34;神经网络示例图2&#34;&gt;&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

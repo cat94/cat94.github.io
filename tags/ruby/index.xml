@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ruby on Shen Jianan的随缘更新</title>
+    <link>http://www.shenjianan.top/tags/ruby/</link>
+    <description>Recent content in Ruby on Shen Jianan的随缘更新</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cmn-Hans</language>
+    <copyright>&lt;strong&gt;欢迎通过&lt;a href=&#34;mailto:shen_jianan@foxmail.com&#34;&gt;邮箱&lt;/a&gt;(shen_jianan@foxmail.com)探讨问题&lt;/strong&gt; &lt;br/&gt;&lt;br/&gt;&lt;br /&gt;本作品采用&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议&lt;/a&gt;进行许可。 &lt;br /&gt;</copyright>
+    <lastBuildDate>Mon, 02 Nov 2015 15:44:53 +0000</lastBuildDate>
+    
+	<atom:link href="http://www.shenjianan.top/tags/ruby/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Ruby元编程 星期五</title>
+      <link>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-5/</link>
+      <pubDate>Mon, 02 Nov 2015 15:44:53 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-5/</guid>
+      <description>&lt;h1 id=&#34;kerneleval&#34;&gt;Kernel#eval&lt;/h1&gt;
+&lt;p&gt;我们已经知道instance_eval和class_eval，现在接触*eval的第三个成员——eval方法。eval方法会直接执行代码字符串。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-ruby&#34; data-lang=&#34;ruby&#34;&gt;array &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+element &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt;
+eval(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;array &amp;lt;&amp;lt; element&amp;#34;&lt;/span&gt;) 	&lt;span style=&#34;color:#75715e&#34;&gt;# =&amp;gt; [10, 20, 30]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+    </item>
+    
+    <item>
+      <title>Ruby元编程 星期四</title>
+      <link>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-4/</link>
+      <pubDate>Wed, 28 Oct 2015 22:14:08 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-4/</guid>
+      <description>&lt;h1 id=&#34;类定义&#34;&gt;类定义&lt;/h1&gt;
+&lt;p&gt;即将走进&amp;quot;Ruby对象模型最深暗的角落&amp;rdquo;&amp;hellip;和Java不同，在Ruby中，定义类实际上就是在运行代码，这种思想催生了1、可以修改类的类宏 2、可以在其他方法前后封装额外代码的环绕别名。当然，因为类不过是增强的模块，所以这些知识也可以应用于模块。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Ruby元编程 星期三</title>
+      <link>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-3/</link>
+      <pubDate>Mon, 26 Oct 2015 20:05:37 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-3/</guid>
+      <description>&lt;h1 id=&#34;代码块&#34;&gt;代码块&lt;/h1&gt;
+&lt;p&gt;块可以用来控制作用域，它只是Ruby中“可调用对象”的一种，还有其他的可调用对象，比如proc和lambda。在这一章将会学习怎样利用这些对象来进行元编程。&lt;/p&gt;
+&lt;p&gt;前面两章的内容跟普通的面向对象没有很大的区别，但是代码块源于函数式编程语言，所以会带有函数式编程独特的思考角度~&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Ruby元编程 星期二</title>
+      <link>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-2/</link>
+      <pubDate>Sat, 24 Oct 2015 23:16:17 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-2/</guid>
+      <description>&lt;h1 id=&#34;解决代码重复&#34;&gt;解决代码重复&lt;/h1&gt;
+&lt;p&gt;在星期二，书中给出了一个关于包装老系统接口造成代码冗余的例子。下面是这个例子，它贯穿了整个章节，集中体现了Ruby道路的优越性+_+&lt;/p&gt;
+&lt;p&gt;有一个老系统，他有很多蹩脚的代码，现在要求系统自动为超过99美元的开销添加标记。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Ruby元编程 星期一</title>
+      <link>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-1/</link>
+      <pubDate>Sat, 24 Oct 2015 19:05:40 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-1/</guid>
+      <description>&lt;h1 id=&#34;转入魔都&#34;&gt;转入魔都&lt;/h1&gt;
+&lt;p&gt;啊哈~自从不做阿里实习生之后，在学校浑浑噩噩过了一周左右，终于又开始找实习~先投了猿题库，无奈要等到十月中旬才能面试，就先面了eBay，没想到还挺顺利地就过了，就这么当着杭州的二房东跑到上海开始实习生涯了~~
+P.S. 6号拿到offer13号入职，到现在才写下这段话的效率也是堪忧啊~&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

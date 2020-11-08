@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>
+再探排序
+</title>
+
+    
+  <link href="https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/avatars/totoro3.jpeg?x-oss-process=style/icon" rel="shortcut icon" type="image/x-icon" />
+
+
+
+  
+  <meta name="author" content="Shen Jianan" />
+  <meta name="description" content="再探排序 记得之前写过一篇关于快排的博客，当时只是写了一个快排的代码片段，加上简单的优化意见——当递归到一定规模的序列时使用插排提升效率、随机选取比较的元。那篇博客是在准备面试时看到网上一些资料而写的简单的笔记。
+最近在重新读《数据结构与算法分析》，这本书是大二时数据结构课的教材。记得当初上课没有用心学习，最后的成绩也算是勉勉强强八十几分。到现在，对于排序也就记得大体的思想，真正上手写代码却是漏洞百出。现在重新回顾，得到了很多新的感悟，原来像团团迷雾的算法细节也终于清晰起来。本篇博客会对插入排序、希尔排序、快速排序、归并排序的读书体会与收获进行记录。
+" />
+
+
+
+<meta name="generator" content="Hugo 0.68.3" />
+
+<link rel="canonical" href="http://www.shenjianan.top/posts/algorithm/%E5%86%8D%E6%8E%A2%E6%8E%92%E5%BA%8F/" />
+
+
+<meta property="og:title" content="再探排序" />
+<meta property="og:description" content="再探排序
+记得之前写过一篇关于快排的博客，当时只是写了一个快排的代码片段，加上简单的优化意见——当递归到一定规模的序列时使用插排提升效率、随机选取比较的元。那篇博客是在准备面试时看到网上一些资料而写的简单的笔记。
+最近在重新读《数据结构与算法分析》，这本书是大二时数据结构课的教材。记得当初上课没有用心学习，最后的成绩也算是勉勉强强八十几分。到现在，对于排序也就记得大体的思想，真正上手写代码却是漏洞百出。现在重新回顾，得到了很多新的感悟，原来像团团迷雾的算法细节也终于清晰起来。本篇博客会对插入排序、希尔排序、快速排序、归并排序的读书体会与收获进行记录。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.shenjianan.top/posts/algorithm/%E5%86%8D%E6%8E%A2%E6%8E%92%E5%BA%8F/" />
+<meta property="article:published_time" content="2016-03-18T22:27:53+00:00" />
+<meta property="article:modified_time" content="2016-03-18T22:27:53+00:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="再探排序"/>
+<meta name="twitter:description" content="再探排序
+记得之前写过一篇关于快排的博客，当时只是写了一个快排的代码片段，加上简单的优化意见——当递归到一定规模的序列时使用插排提升效率、随机选取比较的元。那篇博客是在准备面试时看到网上一些资料而写的简单的笔记。
+最近在重新读《数据结构与算法分析》，这本书是大二时数据结构课的教材。记得当初上课没有用心学习，最后的成绩也算是勉勉强强八十几分。到现在，对于排序也就记得大体的思想，真正上手写代码却是漏洞百出。现在重新回顾，得到了很多新的感悟，原来像团团迷雾的算法细节也终于清晰起来。本篇博客会对插入排序、希尔排序、快速排序、归并排序的读书体会与收获进行记录。"/>
+
+
+<link rel="stylesheet" href="/css/github-markdown.css" />
+<link rel="stylesheet" href="/css/semantic.min.css" />
+<link rel="stylesheet" href="/css/site.css" />
+
+
+
+
+
+  </head>
+
+  
+  <body style="background-image: url(https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/bg/mountains-covered-in-snow-mid.jpg);">
+  
+    <div class="flip-container">
+      <div class="flipper">
+        <section class="front">
+          
+<nav class="ui secondary menu dream-menu">
+
+  <div class="item">
+    <i class="large link bullseye icon dream-flip-toggle" title="Flip it!"></i>
+  </div>
+  <div class="item">
+    <i class="large link home icon" title="Home" onclick="window.location.href = 'http:\/\/www.shenjianan.top\/'"></i>
+  </div>
+  <div class="item">
+    <i class="large link icon theme-switch" onclick="themeSwitch()"></i>
+  </div>
+</nav>
+
+          
+<div class="ui centered relaxed grid dream-grid">
+  <div class="sixteen wide mobile sixteen wide tablet twelve wide computer column markdown-body dream-single">
+
+    <section class="ui top attached segment" id="dream-save-post-as-img">
+      <header style="margin-top: 0 !important;">
+        <h2 class="ui header">
+          再探排序
+          <div class="sub header">@ Shen Jianan · Friday, Mar 18, 2016 · 13 minute read · Update at Mar 18, 2016</div>
+        </h2>
+      </header>
+      <article style="margin-top: 2rem;"><h1 id="再探排序">再探排序</h1>
+<p>记得之前写过一篇关于快排的博客，当时只是写了一个快排的代码片段，加上简单的优化意见——当递归到一定规模的序列时使用插排提升效率、随机选取比较的元。那篇博客是在准备面试时看到网上一些资料而写的简单的笔记。</p>
+<p>最近在重新读《数据结构与算法分析》，这本书是大二时数据结构课的教材。记得当初上课没有用心学习，最后的成绩也算是勉勉强强八十几分。到现在，对于排序也就记得大体的思想，真正上手写代码却是漏洞百出。现在重新回顾，得到了很多新的感悟，原来像团团迷雾的算法细节也终于清晰起来。本篇博客会对插入排序、希尔排序、快速排序、归并排序的读书体会与收获进行记录。</p>
+<h1 id="插入排序">插入排序</h1>
+<h2 id="基本思想">基本思想</h2>
+<p>插入排序的思想是：对于一个已经排序（不妨设从小到大排序）的序列，如果要新增元素并且保持序列的大小顺序，我只要从最后（即最大）的数字开始寻找，找到第一个比自己小的数字，然后插入到这个位置就好了。下表展示了插入元素的具体过程：</p>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th align="center">序列</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>初始序列</td>
+<td align="center">12 3 67 45 4 92</td>
+</tr>
+<tr>
+<td>插入3</td>
+<td align="center">3 12 67 45 4 92</td>
+</tr>
+<tr>
+<td>插入67（不变）</td>
+<td align="center">3 12 67 45 4 92</td>
+</tr>
+<tr>
+<td>插入45</td>
+<td align="center">3 12 45 67 4 92</td>
+</tr>
+<tr>
+<td>插入4</td>
+<td align="center">3 4 12 45 67 92</td>
+</tr>
+<tr>
+<td>插入92（不变）</td>
+<td align="center">3 4 12 45 67 92</td>
+</tr>
+</tbody>
+</table>
+<h2 id="复杂度分析">复杂度分析</h2>
+<p>在进行排序算法的复杂度分析之前，我们先了解一下<strong>逆序</strong>的概念。我们称具有$i &lt; j$但$A[i] &gt; A[j]$性质的数偶$&lt; A[i], A[j]&gt;$为逆序。</p>
+<p>很容易可以证明，N个元素组成的序列平均有$\frac{N*(N-1)}{4}$个逆序：N个元素中一共有$\mathbf{C}_n^2$个数偶。平均情况下，则一般是逆序一般是正序，$L_r+L = \mathbf{C}_n^2$，则逆序数$L_r=\frac{\mathbf{C}_n^2}{2}=\frac{N*(N-1)}{4}$。</p>
+<p>为什么要证明逆序的数量呢？因为排序的本质是消除逆序：如果一个序列没有逆序，那么它就是已经有序的了。在插入排序中，如果已排序的序列中有$M$个比$A[i]$大的元素，那么这个$A[i]$和这$M$个元素就形成了$M$个逆序。由于插入对于后面的元素和$A[i]$的位置关系没有影响，所以一次插入恰巧可以消除$M$个逆序。但是，一次插入的代价则是M个元素都向后移动一位，同时$A[i]$存放在相应的位置，所以消除M个逆序的代价是$M+1$。平均下来，每逆序的消除代价是$O(1)$。不算上其他的附加操作，消除$\frac{N*(N-1)}{4}$个逆序就需要$O(N^2)$的开销了。</p>
+<p>事实上，对于所有每次都只交换相邻元素的排序（说的就是冒泡排序&hellip;），他们每次都只能消除一个逆序，$O(N^2)$就是他们的牢笼了。</p>
+<h2 id="代码实现">代码实现</h2>
+<p>在代码实现时，有两种比较常见的比较方案——从前向后比较和从后向前比较。</p>
+<p>在从前向后比较的实现中，一旦发现比自己大的元素，则从这个元素开始，所有的元素都向后移动一个单位；如果所有的元素都小于等于自己，则需要判断是否已经到最后。</p>
+<p>在从后向前比较的实现中，只要元素比自己大就向后移动一个单位，直到遇到比自己小的元素，并放入这个位置。如果所有的元素都小于等于自己，则只需要比较最后一个元素，发现比自己小就停止比较了。</p>
+<p>我们可以看出，从后向前进行比较的方式比较简单，而且不用遍历比自己小的元素，且截止条件很明确：遇到比自己小的元素或者到达位置0处。而从前向后比较的截止位置还要根据当前插入元素的位置来调整，不那么直观；同时所有的元素都会被遍历到，效率比前者低下。如果所有的元素相等，前者只需要$O(N)$，而后者则需要$O(N^2)$的时间。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">InsertSort</span>
+<span style="color:#75715e"># 实现1:从0开始寻找比list[i]大的值，这样如果所有的值都小于等于list[i]，依然要遍历i个元素</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">self</span><span style="color:#f92672">.</span><span style="color:#a6e22e">insert_sort_1</span>(list)
+    size <span style="color:#f92672">=</span> list<span style="color:#f92672">.</span>size
+
+    (<span style="color:#ae81ff">1</span><span style="color:#f92672">...</span>size)<span style="color:#f92672">.</span>each <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>i<span style="color:#f92672">|</span>
+      (<span style="color:#ae81ff">0</span><span style="color:#f92672">...</span>i)<span style="color:#f92672">.</span>each <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>j<span style="color:#f92672">|</span>
+        insert(list, i, j) <span style="color:#f92672">and</span> <span style="color:#66d9ef">break</span> <span style="color:#66d9ef">if</span> list<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span> <span style="color:#f92672">&lt;</span> list<span style="color:#f92672">[</span>j<span style="color:#f92672">]</span>
+      <span style="color:#66d9ef">end</span>
+    <span style="color:#66d9ef">end</span>
+  <span style="color:#66d9ef">end</span>
+
+<span style="color:#75715e"># 实现2:从末端开始寻找比list[i]小的值，并且在寻找的同时移动元素，这样如果所有的值都小于等于list[i]，则只需要找第一个值就可以，所以这种方式更优</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">self</span><span style="color:#f92672">.</span><span style="color:#a6e22e">insert_sort_2</span>(list)
+    size <span style="color:#f92672">=</span> list<span style="color:#f92672">.</span>size
+
+    (<span style="color:#ae81ff">1</span><span style="color:#f92672">...</span>size)<span style="color:#f92672">.</span>each <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>i<span style="color:#f92672">|</span>
+      j <span style="color:#f92672">=</span> i
+      tmp <span style="color:#f92672">=</span> list<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span>
+      <span style="color:#75715e"># 依次移动比list[i]大的元素，直到遇到比list[i]小的元素或者到达顶端</span>
+      <span style="color:#66d9ef">while</span> j<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> tmp <span style="color:#f92672">&lt;</span> list<span style="color:#f92672">[</span>j<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span><span style="color:#f92672">]</span>
+        list<span style="color:#f92672">[</span>j<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> list<span style="color:#f92672">[</span>j<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span><span style="color:#f92672">]</span>
+        j <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>
+      <span style="color:#66d9ef">end</span>
+      list<span style="color:#f92672">[</span>j<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> tmp
+    <span style="color:#66d9ef">end</span>
+  <span style="color:#66d9ef">end</span>
+
+  <span style="color:#66d9ef">private</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">self</span><span style="color:#f92672">.</span><span style="color:#a6e22e">insert</span>(list, index, pos)
+    tmp <span style="color:#f92672">=</span> list<span style="color:#f92672">[</span>index<span style="color:#f92672">]</span>
+    i<span style="color:#f92672">=</span> index
+    <span style="color:#66d9ef">while</span> i <span style="color:#f92672">&gt;</span> pos <span style="color:#66d9ef">do</span>
+      list<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> list<span style="color:#f92672">[</span>i<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span><span style="color:#f92672">]</span>
+      i <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>
+    <span style="color:#66d9ef">end</span>
+    list<span style="color:#f92672">[</span>pos<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> tmp
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><h1 id="希尔排序">希尔排序</h1>
+<h2 id="基本思想-1">基本思想</h2>
+<p>希尔排序的想法很简单，既然相邻元素交换一次只能消除一个逆序，那么隔着多个元素交换不就能解除$O(N^2)$的限制了吗？希尔排序先以一个较大距离进行一趟排序，再以小一些的距离进行第二趟排序……最后到只比较相邻元素时，大多数逆序已经被消除了：</p>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th align="center">序列</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>初始序列</td>
+<td align="center">12 3 67 45 4 92 54 23 78 11 8</td>
+</tr>
+<tr>
+<td>距离为4</td>
+<td align="center"><a style='color:red'>4</a> <a style='color:blue'>3</a> <a style='color:green'>8</a> <a style='color:grey'>23</a> <a style='color:red'>12</a> <a style='color:blue'>11</a> <a style='color:green'>54</a> <a style='color:grey'>45</a> <a style='color:red'>78</a> <a style='color:blue'>92</a> <a style='color:green'>67</a></td>
+</tr>
+<tr>
+<td>距离为2</td>
+<td align="center"><a style='color:red'>4</a> <a style='color:blue'>3</a> <a style='color:red'>8</a> <a style='color:blue'>11</a> <a style='color:red'>12</a> <a style='color:blue'>23</a> <a style='color:red'>54</a> <a style='color:blue'>45</a> <a style='color:red'>67</a> <a style='color:blue'>92</a> <a style='color:red'>78</a></td>
+</tr>
+<tr>
+<td>距离为1</td>
+<td align="center">3 4 8 11 12 23 45 54 67 78 92</td>
+</tr>
+</tbody>
+</table>
+<p>记某次排序的距离为$h_k$，那么一次$h_k$排序的过程就是对$h_k$个子数组进行插入排序。</p>
+<h2 id="复杂度分析-1">复杂度分析</h2>
+<p>希尔排序最坏的结果就是相隔的排序没有成功消除多个逆序，最后的复杂度就成了插入排序的$O(N^2)$。</p>
+<p>为了提高希尔排序的效率，增量序列$h_1,h_2,……,h_n$必须慎重地进行选择。如果增量序列不是互素的，增量缩小时，可以消除的逆序数量也许会因为它的倍数们的关系而大大减少。流行的一种选择是初始增量为$N/2$，且每次增量都是上一次的$1/2$。这就是在上一小节表格中使用的方案，可以看到在距离为2时消除的逆序数量并不理想。Hibbard 提出了一个比$2^n$更好的增量方案:$1,3,7,……,2^n-1$，它的相邻增量没有公因子，虽然其中还是包含很多公因子，但已经比$2^n$具有更好的表现，有证明Hibbard增量的希尔排序最坏情形运行时间是$\Theta(N^{3/2})$。</p>
+<p>在实践中，Sedgewick还提出了集中比Hibbard好得多的增量序列，最坏运行实践是$\Theta(N^{4/3})$，平均运行时间猜测（没有被证明）是$O(N^{7/6})$，其中最好的序列是${1,5,19,41,109,……}$，序列的项是$9<em>4^i-9</em>2^i+1$或$4^i-3*2^i+1$。</p>
+<p>总的来说，希尔排序的算法非常简单，但是算法复杂度的分析又非常复杂。在这里只是给出了比较好的序列供选择。希尔排序的性能在实践中完全可以接受，即使是数以万计的N仍然如此，简单的算法使它成为处理较大输入数据的常用算法。</p>
+<h2 id="代码实现-1">代码实现</h2>
+<p>希尔排序本质就是不断进行增量为$h_k$的插入排序，从$h_k$处的元素开始。所以希尔排序的代码只要在插入排序的基础上进行修改即可：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">shell_sort</span>(list,increments)
+
+  <span style="color:#75715e"># 从大到小的顺序使用增量进行排序</span>
+  increments<span style="color:#f92672">.</span>reverse<span style="color:#f92672">.</span>each <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>increment<span style="color:#f92672">|</span>
+    i <span style="color:#f92672">=</span> increment
+    
+    <span style="color:#66d9ef">while</span>  i <span style="color:#f92672">&lt;</span> N
+      j <span style="color:#f92672">=</span> i
+      <span style="color:#75715e"># 增量为increment的插入排序，此时待插入的元素是list[i]</span>
+      tmp <span style="color:#f92672">=</span> list<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span>
+      <span style="color:#66d9ef">while</span> j<span style="color:#f92672">&gt;=</span>increment <span style="color:#f92672">&amp;&amp;</span> list<span style="color:#f92672">[</span>j<span style="color:#f92672">-</span>increment<span style="color:#f92672">]</span> <span style="color:#f92672">&gt;</span> tmp
+        list<span style="color:#f92672">[</span>j<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> list<span style="color:#f92672">[</span>j<span style="color:#f92672">-</span>increment<span style="color:#f92672">]</span>
+        j <span style="color:#f92672">-=</span> increment
+      <span style="color:#66d9ef">end</span>
+      list<span style="color:#f92672">[</span>j<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> tmp
+      i <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+    <span style="color:#66d9ef">end</span>
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>乍一看希尔排序是很多遍的插入排序，但是由于每趟希尔排序可以一次消除多个逆序，所以每个小插入排序的效率较高，选对增量序列的话，自然比插入排序快很多。</p>
+<h1 id="快速排序">快速排序</h1>
+<h2 id="基本思想-2">基本思想</h2>
+<p>作为一种递归的算法，快速排序的想法也很简单：把各个元素看成书架上的一排书，比当前书小的在左边，比当前书大的在右边。对于左右两边的子序列，继续使用这样的做法，直到左右子序列都不超过一本书，那么所有的书就是有序的了。在快排算法中，称“当前书”为枢纽元。枢纽元的选取方式有很多，在下面的表格中，取最后一个元素作为枢纽元：</p>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th align="center">序列</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>初始序列</td>
+<td align="center">12 3 67 45 4 92 54 23 78 11 8</td>
+</tr>
+<tr>
+<td>取8作为枢纽元</td>
+<td align="center">4 3 <a style='color:red'>8</a> 45 12 92 54 23 78 11 67</td>
+</tr>
+<tr>
+<td>8左右序列分别取3和67</td>
+<td align="center"><a style='color:red'>3</a> 4 <a>8</a> 45 12 11 54 23 <a style='color:red'>67</a> 92 78</td>
+</tr>
+<tr>
+<td>67左右序列分别取23和78</td>
+<td align="center"><a>3</a> 4 <a>8</a> 11 12 <a style='color:red'>23</a> 54 45 <a>67</a> <a style='color:red'>78</a> 92</td>
+</tr>
+<tr>
+<td>23左右序列分别取12和45</td>
+<td align="center"><a>3</a> 4 <a>8</a> 11 <a style='color:red'>12</a> <a>23</a> <a style='color:red'>45</a> 54 <a>67</a> <a>78</a> 92</td>
+</tr>
+</tbody>
+</table>
+<h2 id="复杂度分析-2">复杂度分析</h2>
+<p>快排的平均运行时间是$O(N\log N)$，最坏情况是$O(N^2)$。作为一个递归的算法，平均状况下每次将序列平分成两份，则一共进行$\log N$趟划分，每次划分遍历一遍序列，耗时$O(N)$，所以平均耗时为$O(N \log N)$。在最坏情况下，作为枢纽元的元素是最大/最小的元素，则序列被划分为$0$元素的序列和$N-1$的序列。如果每个序列都是这样的情况，则需要进行$N-1$趟划分，共耗时为$O(N^2)$。</p>
+<h2 id="算法细节">算法细节</h2>
+<h3 id="三数中值分割法">三数中值分割法</h3>
+<p>快速排序可能会耗时$O(N^2)$的根本原因在于选取枢纽元的时候不能保证子序列的大小是相对平均的。</p>
+<p>划分的具体过程是怎么样的呢？首先将枢纽元放在最后，并且最左边为指针$i$，枢纽元前是指针$j$，$i$和$j$分别在遇到大于等于/小于等于枢纽元的时候停止，如果此时$i$处的元素依然小于$j$处的元素，那么两者进行交换，并且指针继续前进。直到$list[i]&gt;list[j]$，则将枢纽元与$list[i]$进行对调，完成划分。</p>
+<p>为了让选取的枢纽元不至于太极端，随机选择是个好主意吗？且不说随机数生成相当耗时，随机选择依然可能会选中最大/最小的元素。甚至，在输入数据是随机的情况下，就算每次都取第一个数也跟随机选择的效果是一样的，因为选到的数都是随机的，这时生成随机数就是&quot;literally&quot;的徒劳了。</p>
+<p>那么有什么更好的办法吗？<strong>三数中值分割法</strong>是个不错的办法。三数中值分割法的思想是：取当前序列的第一、最末和中间三个数字，将他们从小到大排列，最小的元素放在序列最左，中间的元素放在序列最右，最大的元素放在倒数第二个位置。这样最左边的元素和倒数第二个元素分别小于/大于枢纽元，可以保证在游标移动的过程中一定会遇到可以停止的元素而不会越界。这两个元素分别是两个警戒标记。</p>
+<p>三数中值分割法尽管可以避免产生极端的划分结果且不像随机数生成那么耗时，但是也是相当费时间的。因此很多情况下，使用三数中值分割法并不能使快速排序的运行时间更短。但是在理论上，三数中值分割法确实是一个比较好的优化方法。</p>
+<p>现在划分的具体代码如下所示：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">list <span style="color:#f92672">=</span> <span style="color:#f92672">[</span><span style="color:#ae81ff">21</span>,<span style="color:#ae81ff">324</span>,<span style="color:#ae81ff">54</span>,<span style="color:#ae81ff">12</span>,<span style="color:#ae81ff">65</span>,<span style="color:#ae81ff">2</span><span style="color:#f92672">]</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">quick_sort</span>(left,right)
+  i<span style="color:#f92672">=</span>left
+  j <span style="color:#f92672">=</span> right<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+  item <span style="color:#f92672">=</span> list<span style="color:#f92672">[</span>right<span style="color:#f92672">]</span>
+  <span style="color:#75715e"># 当i和j都停止时交换，直到i&gt;=j</span>
+  <span style="color:#66d9ef">while</span> <span style="color:#66d9ef">true</span>
+  	<span style="color:#75715e"># 递增i直到遇到大于等于枢纽元的元素。</span>
+  	<span style="color:#75715e"># 这里的++i不能变成 if list[i]&lt;item  i++</span>
+  	<span style="color:#75715e"># 因为如果不是++i的话，如果i和j都遇到了和枢纽元相同大小的元素，那么他们会永远停留在这个位置进入死循环。++i确保交换之后就前进。</span>
+    <span style="color:#66d9ef">while</span> list<span style="color:#f92672">[++</span>i<span style="color:#f92672">]</span> <span style="color:#f92672">&lt;</span> item
+    <span style="color:#66d9ef">end</span>
+    <span style="color:#66d9ef">while</span> list<span style="color:#f92672">[++</span>j<span style="color:#f92672">]</span> <span style="color:#f92672">&gt;</span> item
+    <span style="color:#66d9ef">end</span>
+    
+    <span style="color:#66d9ef">if</span> i<span style="color:#f92672">&lt;</span>j
+      swap(list<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span>,list<span style="color:#f92672">[</span>j<span style="color:#f92672">]</span>) <span style="color:#66d9ef">if</span> i<span style="color:#f92672">&lt;</span>j
+    <span style="color:#66d9ef">else</span>
+      <span style="color:#66d9ef">break</span>
+    <span style="color:#66d9ef">end</span>
+  <span style="color:#66d9ef">end</span>
+  
+  swap(list<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span>,list<span style="color:#f92672">[</span>right<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span><span style="color:#f92672">]</span>)
+  
+  quick_sort(left,i<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+  quick_sort(i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>,right)
+
+<span style="color:#66d9ef">end</span>
+</code></pre></div><h3 id="相等元素">相等元素</h3>
+<p>另一个细节是关于相等元素的：如果元素和枢纽元的大小相等，那么需要交换吗？直觉上好像不交换可以节省一次操作，但是更细致地分析来看，如果相等的元素不交换，那么当所有的元素都等于枢纽元时，会发生什么——$i$不停递增到$j$处，序列被分为空序列和$N-1$个元素的序列。对于具有$N$个相同元素的序列来说，时间复杂度成为了$O(N^2)$。而直觉上比较慢的每次都交换的时间复杂度则为$O(N\log N)$。因此，结论是与枢纽元相等的元素也停止并进行交换的处理方式比较好。</p>
+<p>最后一个细节：对于很小的数组$(N\leq20$)来说，插入排序的效率比快速排序更高。通常的解决办法是对于小于等于一定尺寸(通常是$10$)的序列采用插入排序。这种措施还有一种附加的好处：在使用三数中值分割法时不会出现只有一两个元素的情况。根据《数据结构与算法分析》的描述，这样的处理可以节省$15%$的快速排序运行时间。</p>
+<h1 id="归并排序">归并排序</h1>
+<h2 id="基本思想-3">基本思想</h2>
+<p>归并排序也是一个递归的算法，它的思想是合并两个已经排序的序列A和B，从他们的第一个元素开始，取较小者拷贝到第三个空序列C中，一直到某个序列已经取到末尾，则把另一个序列全部拷贝到C中。</p>
+<p>$1,13,24,26 \ \uparrow \ Aptr$</p>
+<p>$2,15,27,38 \ \uparrow \ Bptr$</p>
+<p>$\square \square \square \square \square \square \square \square \ \uparrow \ Cptr$</p>
+<p>$……$</p>
+<p>指针移动</p>
+<p>$……$</p>
+<p>$1,13,24,26 \ &hellip;&hellip;&hellip;\uparrow \ &hellip;&hellip;&hellip;Aptr$</p>
+<p>$2,15,27,38 \ &hellip;&hellip;\uparrow \ &hellip;&hellip;Bptr$</p>
+<p>$1,2,13,15,24,\square \square \square \ &hellip;&hellip;&hellip;&hellip;&hellip;\uparrow \ &hellip;&hellip;&hellip;&hellip;&hellip;Cptr$</p>
+<p>下一步$26$放入$Cptr$处，接着讲$27,38$直接放在最后，排好序的$C$序列就诞生了。</p>
+<h2 id="复杂度">复杂度</h2>
+<p>归并排序的复杂度也是$O(N\log N)$。它将序列逐层分治，对$N$个数归并的时间等于对两个$\frac{N}{2}$大小的序列归并，再加上合并时间$N$。</p>
+<p>$$T(1)=1 \ T(N)=2T(\frac{N}{2})+N$$
+两边各除以N可得
+$$\frac{T(N)}{N} = \frac{T(\frac{N}{2})}{\frac{N}{2}}+1$$
+$$\frac{T(\frac{N}{2})}{\frac{N}{2}} = \frac{T(\frac{N}{4})}{\frac{N}{4}}+1$$
+$$……$$
+$$\frac{T(2)}{2} = T(1)+1$$</p>
+<p>逐层累加，得到
+$$T(N)=N\log N+N$$
+所以，归并排序的复杂度是$O(N\log N)$。</p>
+<h2 id="算法细节-1">算法细节</h2>
+<h3 id="临时数组">临时数组</h3>
+<p>归并排序中一个很大的开销就是临时数组的创建。如果每一趟合并都新创建一次临时数组的话，就需要$\log N$个临时数组。不但十分耗时，还占用大量内存。</p>
+<p>事实上，同一时刻归并排序只需要一个临时数组。所以可以使用一个和原数组相同大小的临时数组，每一趟归并都使用此临时数组，不再每次创建。</p>
+<p>尽管如此，归并排序还是需要额外的内存和数据拷贝的额外时间，所以对于重要的内部排序应用而言，人们还是倾向于使用快速排序。</p>
+<h2 id="代码实现-2">代码实现</h2>
+<p>下面是简单的归并排序代码实现:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">merge_sort</span>(list, sec_list, left, right)
+  <span style="color:#66d9ef">unless</span> left <span style="color:#f92672">&gt;=</span> right
+    middle <span style="color:#f92672">=</span> (left<span style="color:#f92672">+</span>right)<span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>
+    merge_sort(list, sec_list, left, middle)
+    merge_sort(list, sec_list, middle<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>,right)
+
+    pos1 <span style="color:#f92672">=</span> left
+    pos2 <span style="color:#f92672">=</span> middle<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>
+    curr <span style="color:#f92672">=</span> left
+    <span style="color:#66d9ef">while</span>(pos1 <span style="color:#f92672">&lt;=</span> middle <span style="color:#f92672">&amp;&amp;</span> pos2<span style="color:#f92672">&lt;=</span>right)
+      <span style="color:#66d9ef">if</span> list<span style="color:#f92672">[</span>pos1<span style="color:#f92672">]</span> <span style="color:#f92672">&gt;</span> list<span style="color:#f92672">[</span>pos2<span style="color:#f92672">]</span>
+        sec_list<span style="color:#f92672">[</span>curr<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> list<span style="color:#f92672">[</span>pos2<span style="color:#f92672">]</span>
+        pos2 <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+      <span style="color:#66d9ef">else</span>
+        sec_list<span style="color:#f92672">[</span>curr<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> list<span style="color:#f92672">[</span>pos1<span style="color:#f92672">]</span>
+        pos1 <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+      <span style="color:#66d9ef">end</span>
+      curr <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+    <span style="color:#66d9ef">end</span>
+
+    <span style="color:#66d9ef">while</span>(pos1 <span style="color:#f92672">&lt;=</span> middle)
+      sec_list<span style="color:#f92672">[</span>curr<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> list<span style="color:#f92672">[</span>pos1<span style="color:#f92672">]</span>
+      pos1 <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+      curr <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+    <span style="color:#66d9ef">end</span>
+
+
+    <span style="color:#66d9ef">while</span>(pos2 <span style="color:#f92672">&lt;=</span> right)
+      sec_list<span style="color:#f92672">[</span>curr<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> list<span style="color:#f92672">[</span>pos2<span style="color:#f92672">]</span>
+      pos2 <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+      curr <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+    <span style="color:#66d9ef">end</span>
+
+    (left<span style="color:#f92672">..</span>right)<span style="color:#f92672">.</span>each <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>index<span style="color:#f92672">|</span>
+      list<span style="color:#f92672">[</span>index<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> sec_list<span style="color:#f92672">[</span>index<span style="color:#f92672">]</span>
+    <span style="color:#66d9ef">end</span>
+
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><h2 id="归并排序rightarrow外部排序">归并排序$\rightarrow$外部排序</h2>
+<p>在无法全部装入内存的外部排序中，归并排序的思想被广泛地用到。下面是使用三盘额外磁带对一盘磁带的大量数组进行排序的过程：</p>
+<table>
+<thead>
+<tr>
+<th>磁带</th>
+<th>序列</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$T_{a1}$</td>
+<td>81 94 11 96 12 35 17 99 28 58 41 75 15</td>
+</tr>
+<tr>
+<td>$T_{a2}$</td>
+<td></td>
+</tr>
+<tr>
+<td>$T_{b1}$</td>
+<td></td>
+</tr>
+<tr>
+<td>$T_{b2}$</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>如果每次从磁带读入M=3条记录，并且交替地排序后写到$T_{b1}$和$T_{b2}$中，那么结果就是这样的：</p>
+<table>
+<thead>
+<tr>
+<th>磁带</th>
+<th>序列</th>
+<th>序列</th>
+<th>序列</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$T_{a1}$</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>$T_{a2}$</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>$T_{b1}$</td>
+<td>11 81 94</td>
+<td>17 28 99</td>
+<td>15</td>
+</tr>
+<tr>
+<td>$T_{b2}$</td>
+<td>12 35 96</td>
+<td>41 58 75</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>然后将$T_{b1}$和$T_{b2}$中的两个长度为M的顺串通过归并排序写入到$T_{a2}$中，结果就是一个长度为$2M$的顺串。然后再从$T_{b1}$和$T_{b2}$中取出后两个顺串，将结果写到$T_{a1}$中，重复交替使用$T_{a1}$和$T_{a2}$，直到$T_{b1}$和$T_{b2}$为空。这时$T_{a1}$和$T_{a2}$中都是长度为$2M$的顺串，再重复上一次的操作到$T_{b1}$和$T_{b2}$上，这次的结果顺串是$4M$。重复操作直到得到长度为$N$的顺串。</p>
+<p>这样的算法，需要进行$\log(N/M)$趟操作(每次序列都是上一次的两倍，$2^n*M=N$)。</p>
+<h3 id="多路合并">多路合并</h3>
+<p>如果有额外的磁带，可以使用$2k$盘磁带，进行$k$-路合并的算法。基本过程与上一小节的$2$路合并相似，只是从$k$路中取最小的元素需要构造一个最小堆才较为高效。这样的合并方式需要进行$\log_k(N/M)$趟操作。</p>
+<h3 id="多相合并">多相合并</h3>
+<p>多相合并是一中相对复杂一些的合并方式，可以达到只用$k+1$盘磁带完成$k$路合并的效果。</p>
+<p>多相合并的基本思想是把所有顺串不均衡地划分成两份，使得不停地合并部分之后，最后只剩下两个顺串可以合并成一个顺串。</p>
+<p>假设一共有34个顺串，一个可行的分配方案如下：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>初始分配(顺串长度)</th>
+<th>T2+T3</th>
+<th>T1+T2</th>
+<th>T1+T3</th>
+<th>T2+T3</th>
+<th>T1+T2</th>
+<th>T1+T3</th>
+<th>T2+T3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$T_{1}$</td>
+<td>0</td>
+<td>13(2M)</td>
+<td>5(2M)</td>
+<td></td>
+<td>3(8M)</td>
+<td>1(8M)</td>
+<td></td>
+<td>1(34M)</td>
+</tr>
+<tr>
+<td>$T_{2}$</td>
+<td>21(M)</td>
+<td>8(M)</td>
+<td></td>
+<td>5(5M)</td>
+<td>2(5M)</td>
+<td></td>
+<td>1(21M)</td>
+<td></td>
+</tr>
+<tr>
+<td>$T_{3}$</td>
+<td>13(M)</td>
+<td></td>
+<td>8(3M)</td>
+<td>3(3M)</td>
+<td></td>
+<td>2(13M)</td>
+<td>1(13M)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>表格从左向右看是层层分解，那么从右向左看就是层层相加——什么经典的模型是层层相加的呢？斐波那契！分配这些顺串的最好方式就是把它分配成两个斐波那契数，如果不足就使用哑顺串来填充。</p>
+<h3 id="替换选择">替换选择</h3>
+<p>如果想要边读入数据边输入顺串呢？可以通过使用一个最小堆，当读入的数据比当前的最小数据还小的时候，将此数据存入死区（因为这个数据如果放在当前顺串，可能导致顺串的顺序性质遭到破坏）；否则可以读入最小堆。与此同此，不断从最小堆中取出当前最小的元素存入顺串中。当M个元素存入之后，继续存下一个顺串，直到死区的元素个数达到最小堆的大小，用死区的元素构建一个新的最小堆，继续存入顺串。</p>
+<p>这样的处理方式可以避免等待磁盘读完数据之后再进行顺串的创建，而是边读入边创建顺串。在读入时间很长的情况下很有用。</p>
+<h1 id="总结">总结</h1>
+<p>本文记录了插入排序、希尔排序、快速排序、归并排序的读书笔记。</p>
+<p>其实在日常工作中真的会经常用到这些排序算法，甚至算法书中的算法吗？未必。但是为什么还要学习算法、抠细节呢？因为在探究算法细节的时候，我们能够踩到许多看来不会成为问题的坑，也会找到意想不到的性能瓶颈。算法的思想和考虑细节的过程能够锻炼我们的思维。</p>
+<p>在学习其他东西时何尝不需要深入细节的能力呢？会使用数据库就是学会数据库了吗？各种索引、锁、引擎、优化……探究地越多，才会越游刃有余，才不会成为样样“会用”的“面向stackoverflow”编程的<strong>码农</strong>。</p>
+<p>共勉。</p></article>
+    </section>
+
+    <footer class="ui attached segment dream-tags">
+      
+        
+          <a class="ui label" href="/tags/%E7%AE%97%E6%B3%95" title="算法">算法</a>
+        
+      
+      <div
+        class="ui label"
+        style="float: right; background: #1b1c1d !important; cursor: pointer;"
+        onclick="savePostAsImg()">
+        <i class="save icon"></i> Save as image
+      </div>
+    </footer>
+
+    
+      <footer class="ui attached segment">
+        <strong>欢迎通过<a href="mailto:shen_jianan@foxmail.com">邮箱</a>(shen_jianan@foxmail.com)探讨问题</strong> <br/><br/><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可。 <br />
+      </footer>
+    
+
+    
+
+  </div>
+  <div class="sixteen wide mobile sixteen wide tablet four wide computer column">
+    <article class="dream-header">
+  <section class="ui top attached center aligned segment">
+    <div class="ui small circular image">
+      
+        <img src="https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/avatars/totoro3.jpeg?x-oss-process=style/compress">
+      
+    </div>
+
+    <h1 class="ui medium header">Shen Jianan&#39;s blog<div class="sub header" style="margin-top: 0.5rem;">Freedom as Autonomy</div>
+    </h1>
+
+    <div class="ui horizontal list">
+      
+      <a class="item" href="/posts">
+        <i class="archive icon" title="Archives"></i>
+      </a>
+      
+      <a class="item" href="/tags">
+        <i class="tags icon" title="All Tags"></i>
+      </a>
+      <a class="item" href="/categories">
+        <i class="th list icon" title="All Categories"></i>
+      </a>
+    </div>
+  </section>
+
+  
+  <section class="ui attached center aligned segment dream-tags">
+    
+      <a class="ui label" href="/tags/hbase" title="hbase">hbase</a>
+    
+      <a class="ui label" href="/tags/java" title="java">java</a>
+    
+      <a class="ui label" href="/tags/redis" title="redis">redis</a>
+    
+      <a class="ui label" href="/tags/ruby" title="ruby">ruby</a>
+    
+      <a class="ui label" href="/tags/%E4%B9%A0%E9%A2%98" title="习题">习题</a>
+    
+      <a class="ui label" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F" title="分布式">分布式</a>
+    
+      <a class="ui label" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0" title="机器学习">机器学习</a>
+    
+      <a class="ui label" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C" title="神经网络">神经网络</a>
+    
+      <a class="ui label" href="/tags/%E7%AC%94%E8%AE%B0" title="笔记">笔记</a>
+    
+      <a class="ui label" href="/tags/%E7%AE%97%E6%B3%95" title="算法">算法</a>
+    
+      <a class="ui label" href="/tags/%E7%AE%97%E6%B3%95%E5%BC%95%E6%93%8E" title="算法引擎">算法引擎</a>
+    
+      <a class="ui label" href="/tags/%E8%AE%BA%E6%96%87" title="论文">论文</a>
+    
+  </section>
+  
+
+  
+  <section class="ui attached segment dream-categories">
+    <div class="ui accordion">
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/java" class="item">java</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/java/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" class="item">Java并发编程实战 读书笔记</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/redis" class="item">redis</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E4%BA%8B%E4%BB%B6/" class="item">Redis设计与实现——事件</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0aof%E6%8C%81%E4%B9%85%E5%8C%96/" class="item">Redis设计与实现——AOF持久化</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0rdb%E6%8C%81%E4%B9%85%E5%8C%96/" class="item">Redis设计与实现——RDB持久化</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%97%E8%A1%A8%E4%B8%8E%E7%BB%93%E6%9E%84%E4%BD%93/" class="item">Redis设计与实现——数据库列表与结构体</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0sds%E5%93%88%E5%B8%8C%E8%A1%A8/" class="item">Redis设计与实现——SDS哈希表</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0sds%E5%AE%9E%E7%8E%B0%E4%B8%8E%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB/" class="item">Redis设计与实现——SDS实现与代码解读</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/ruby" class="item">ruby</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-5/" class="item">Ruby元编程 星期五</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-4/" class="item">Ruby元编程 星期四</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-3/" class="item">Ruby元编程 星期三</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-2/" class="item">Ruby元编程 星期二</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-1/" class="item">Ruby元编程 星期一</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/%E4%B9%A0%E9%A2%98" class="item">习题</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/exercises/2020-11-07/" class="item">习题2020-11-07</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F" class="item">分布式</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/distributed/raft%E6%A6%82%E8%AE%BA/" class="item">Raft概论</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/distributed/bigtable%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-%E4%B8%AA%E4%BA%BA%E7%BF%BB%E8%AF%91/" class="item">BigTable论文阅读&amp;个人翻译</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/distributed/hbase%E5%AE%9E%E6%88%98%E9%9A%8F%E7%AC%94%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C/" class="item">《HBase实战》随笔——数据操作</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0" class="item">机器学习</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E4%BC%98%E5%8C%96%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%A1%A8%E7%8E%B0%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E6%B3%95/" class="item">优化神经网络表现的几种方法</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E8%83%8C%E5%90%8E%E7%9A%84%E5%9B%9B%E4%B8%AA%E5%9F%BA%E6%9C%AC%E7%AD%89%E5%BC%8F/" class="item">反向传播背后的四个基本等式</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" class="item">神经网络基础知识</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-ex6/" class="item">机器学习 ex6</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E6%A0%B8%E5%87%BD%E6%95%B0/" class="item">核函数</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E8%AE%A1%E7%AE%97%E8%BF%87%E7%A8%8B%E7%AC%94%E8%AE%B0/" class="item">神经网络反向传播计算过程笔记</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/%E7%AE%97%E6%B3%95" class="item">算法</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/algorithm/%E5%86%8D%E6%8E%A2%E6%8E%92%E5%BA%8F/" class="item">再探排序</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/algorithm/%E4%BA%8C%E5%8F%89%E6%A0%91-%E7%BA%A2%E9%BB%91%E6%A0%91%E5%B0%8F%E7%BB%93/" class="item">简单搜索二叉树&amp;红黑树小结</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/algorithm/%E7%BA%BF%E6%80%A7%E6%97%B6%E9%97%B4%E6%8E%92%E5%BA%8F/" class="item">线性时间排序</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/algorithm/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E5%B0%8F%E7%BB%93/" class="item">快速排序算法小结</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/%E7%AE%97%E6%B3%95%E5%BC%95%E6%93%8E" class="item">算法引擎</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/algorithmengine/faiss%E5%90%91%E9%87%8F%E5%8F%AC%E5%9B%9E%E5%BC%95%E6%93%8E%E5%A6%82%E4%BD%95%E5%81%9A%E5%88%B0%E5%BF%AB%E9%80%9F%E6%9F%A5%E6%89%BE%E6%9C%80%E8%BF%91%E9%82%BB/" class="item">Faiss向量召回引擎如何做到快速查找最近邻</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+    </div>
+  </section>
+  
+
+  <section class="ui attached segment header-socials">
+    <nav class="ui secondary menu dream-menu dream-socials">
+  
+    <div class="item">
+      <i class=" mail icon" title="email"></i> 
+      <a href="mailto:shen_jianan@foxmail.com">
+        shen_jianan@foxmail.com
+      </a>
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</nav>
+
+  </section>
+
+  <section class="ui bottom attached center aligned segment">
+    
+      <p>© 2015 - 2020 Shen Jianan的随缘更新</p>
+    
+
+    <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</p>
+  </section>
+</article>
+
+<link rel="stylesheet" href="https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/js/katex/katex.min.css" crossorigin="anonymous">
+    <script defer src="https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/js/katex/katex.min.js" crossorigin="anonymous"></script>
+    <script defer src="https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/js/katex/auto-render.min.js" crossorigin="anonymous"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        
+        
+        renderMathInElement(document.querySelector(".dream-single"), {delimiters:[
+          {left: "$$", right: "$$", display: true},
+          {left: "$", right: "$", display: false}
+          ]
+} );
+      });
+  </script>
+  </div>
+</div>
+
+        </section>
+        <section class="back">
+          
+<nav class="ui secondary menu dream-menu">
+
+  <div class="item">
+    <i class="large link bullseye icon dream-flip-toggle" title="Flip it!"></i>
+  </div>
+  <div class="item">
+    <i class="large link home icon" title="Home" onclick="window.location.href = 'http:\/\/www.shenjianan.top\/'"></i>
+  </div>
+  <div class="item">
+    <i class="large link icon theme-switch" onclick="themeSwitch()"></i>
+  </div>
+</nav>
+
+          <div class="ui centered relaxed grid dream-grid dream-back">
+  
+    <section class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+      <article>
+        <div class="ui top attached segment">
+          <h3 class="ui header">About Me</h3>
+        </div>
+        <div class="ui attached segment markdown-body">
+          <h4 id="201802至今emsp杭州嘉云数据-算法引擎">2018.02至今 杭州嘉云数据 算法引擎</h4>
+<h4 id="20176-201712emsp菜网络-工智能部-算法引擎">2017.6-2017.12 菜⻦网络-⼈工智能部-算法引擎</h4>
+<h4 id="201609-201806emsp南京大学研究生">2016.09-2018.06 南京大学研究生</h4>
+<h4 id="201507-201509emsp阿里巴巴-icbu-实习">2015.07-2015.09 阿里巴巴-ICBU-实习</h4>
+<h4 id="201209-201606emsp南京大学本科">2012.09-2016.06 南京大学本科</h4>
+
+        </div>
+      </article>
+    </section>
+  
+
+  <section class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+    <article>
+      <div class="ui top attached segment">
+        <h3 class="ui header">Social Links</h3>
+      </div>
+      <div class="ui attached segment">
+        <nav class="ui secondary menu dream-menu dream-socials">
+  
+    <div class="item">
+      <i class="large mail icon" title="email"></i> 
+      <a href="mailto:shen_jianan@foxmail.com">
+        shen_jianan@foxmail.com
+      </a>
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</nav>
+
+      </div>
+    </article>
+  </section>
+
+  <section class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+    
+      <footer class="ui segment">
+        <strong>欢迎通过<a href="mailto:shen_jianan@foxmail.com">邮箱</a>(shen_jianan@foxmail.com)探讨问题</strong> <br/><br/><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可。 <br />
+      </footer>
+    
+  </section>
+
+  
+  
+</div>
+
+        </section>
+      </div>
+    </div>
+
+    <script src="/js/jquery.min.js"></script>
+<script src="/js/semantic.min.js"></script>
+<script src="/js/imagesloaded.pkgd.min.js"></script>
+<script src="/js/masonry.pkgd.min.js"></script>
+<script src="/js/nav.js"></script>
+<script src="/js/header.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/theme.js"></script>
+<script src="/js/html2canvas.min.js"></script>
+
+
+
+  </body>
+</html>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Redis on Shen Jianan的随缘更新</title>
+    <link>http://www.shenjianan.top/tags/redis/</link>
+    <description>Recent content in Redis on Shen Jianan的随缘更新</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cmn-Hans</language>
+    <copyright>&lt;strong&gt;欢迎通过&lt;a href=&#34;mailto:shen_jianan@foxmail.com&#34;&gt;邮箱&lt;/a&gt;(shen_jianan@foxmail.com)探讨问题&lt;/strong&gt; &lt;br/&gt;&lt;br/&gt;&lt;br /&gt;本作品采用&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议&lt;/a&gt;进行许可。 &lt;br /&gt;</copyright>
+    <lastBuildDate>Thu, 16 Jun 2016 20:34:27 +0000</lastBuildDate>
+    
+	<atom:link href="http://www.shenjianan.top/tags/redis/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Redis设计与实现——事件</title>
+      <link>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E4%BA%8B%E4%BB%B6/</link>
+      <pubDate>Thu, 16 Jun 2016 20:34:27 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E4%BA%8B%E4%BB%B6/</guid>
+      <description>&lt;h1 id=&#34;事件&#34;&gt;事件&lt;/h1&gt;
+&lt;p&gt;Redis服务器是事件驱动程序，需要处理两种事件：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;文件事件——服务器与客户端通信产生的事件&lt;/li&gt;
+&lt;li&gt;时间事件——Redis中类似serverCron函数的给定时间点执行的事件&lt;/li&gt;
+&lt;/ol&gt;</description>
+    </item>
+    
+    <item>
+      <title>Redis设计与实现——AOF持久化</title>
+      <link>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0aof%E6%8C%81%E4%B9%85%E5%8C%96/</link>
+      <pubDate>Mon, 13 Jun 2016 20:34:17 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0aof%E6%8C%81%E4%B9%85%E5%8C%96/</guid>
+      <description>&lt;h1 id=&#34;aof持久化&#34;&gt;AOF持久化&lt;/h1&gt;
+&lt;p&gt;RDB持久化通过保存键值对来记录数据库，而AOF则通过保存写命令来记录数据库的。写入的命令有特殊的格式，通过文本格式写入，只是在命令中间增加一些固定的协议分隔符。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Redis设计与实现——RDB持久化</title>
+      <link>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0rdb%E6%8C%81%E4%B9%85%E5%8C%96/</link>
+      <pubDate>Mon, 13 Jun 2016 15:43:12 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0rdb%E6%8C%81%E4%B9%85%E5%8C%96/</guid>
+      <description>&lt;h1 id=&#34;rdb持久化&#34;&gt;RDB持久化&lt;/h1&gt;
+&lt;h2 id=&#34;rdb文件的创建与载入&#34;&gt;RDB文件的创建与载入&lt;/h2&gt;
+&lt;p&gt;SAVE命令会阻塞Redis服务器进程，这期间不能处理任何命令。而BGSAVE会派生一个子进程，由子进程创建RDB文件。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Redis设计与实现——数据库列表与结构体</title>
+      <link>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%97%E8%A1%A8%E4%B8%8E%E7%BB%93%E6%9E%84%E4%BD%93/</link>
+      <pubDate>Sat, 04 Jun 2016 14:38:36 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%97%E8%A1%A8%E4%B8%8E%E7%BB%93%E6%9E%84%E4%BD%93/</guid>
+      <description>&lt;h1 id=&#34;数据库&#34;&gt;数据库&lt;/h1&gt;
+&lt;h2 id=&#34;数据库列表&#34;&gt;数据库列表&lt;/h2&gt;
+&lt;p&gt;redis.h/redisServer是Redis服务器的数据结构，保存所有的服务器状态。&lt;/p&gt;
+&lt;p&gt;一个Redis服务器默认会创建16个数据库，redisServer里面有数据库列表指针和数据库数量的记录。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Redis设计与实现——SDS哈希表</title>
+      <link>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0sds%E5%93%88%E5%B8%8C%E8%A1%A8/</link>
+      <pubDate>Mon, 30 May 2016 21:37:23 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0sds%E5%93%88%E5%B8%8C%E8%A1%A8/</guid>
+      <description>&lt;h1 id=&#34;哈希表&#34;&gt;哈希表&lt;/h1&gt;
+&lt;p&gt;dictht结构体定义了一个哈希表，保存着指向dictEntry的指针的数组。通过使用链表来解决哈希冲突。&lt;/p&gt;
+&lt;p&gt;dict结构体是字典的结构体，每个字典有两个哈希表，便于在rehash的时候依然可以进行遍历操作。dict使用safe值来标记当前是否是安全状态，用table值标记当前被迭代的哈希表号码。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Redis设计与实现——SDS实现与代码解读</title>
+      <link>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0sds%E5%AE%9E%E7%8E%B0%E4%B8%8E%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB/</link>
+      <pubDate>Mon, 30 May 2016 11:52:36 +0000</pubDate>
+      
+      <guid>http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0sds%E5%AE%9E%E7%8E%B0%E4%B8%8E%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB/</guid>
+      <description>&lt;h1 id=&#34;sds原理&#34;&gt;SDS原理&lt;/h1&gt;
+&lt;p&gt;总体概述：是Redis中可变字符串的数据结构，所有可变的字符串都使用此数据结构。除了被用作字符串，还被用作缓冲区。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

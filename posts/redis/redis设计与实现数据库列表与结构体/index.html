@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>
+Redis设计与实现——数据库列表与结构体
+</title>
+
+    
+  <link href="https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/avatars/totoro3.jpeg?x-oss-process=style/icon" rel="shortcut icon" type="image/x-icon" />
+
+
+
+  
+  <meta name="author" content="Shen Jianan" />
+  <meta name="description" content="数据库 数据库列表 redis.h/redisServer是Redis服务器的数据结构，保存所有的服务器状态。
+一个Redis服务器默认会创建16个数据库，redisServer里面有数据库列表指针和数据库数量的记录。
+" />
+
+
+
+<meta name="generator" content="Hugo 0.68.3" />
+
+<link rel="canonical" href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%97%E8%A1%A8%E4%B8%8E%E7%BB%93%E6%9E%84%E4%BD%93/" />
+
+
+<meta property="og:title" content="Redis设计与实现——数据库列表与结构体" />
+<meta property="og:description" content="数据库
+数据库列表
+redis.h/redisServer是Redis服务器的数据结构，保存所有的服务器状态。
+一个Redis服务器默认会创建16个数据库，redisServer里面有数据库列表指针和数据库数量的记录。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%97%E8%A1%A8%E4%B8%8E%E7%BB%93%E6%9E%84%E4%BD%93/" />
+<meta property="article:published_time" content="2016-06-04T14:38:36+00:00" />
+<meta property="article:modified_time" content="2016-06-04T14:38:36+00:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Redis设计与实现——数据库列表与结构体"/>
+<meta name="twitter:description" content="数据库
+数据库列表
+redis.h/redisServer是Redis服务器的数据结构，保存所有的服务器状态。
+一个Redis服务器默认会创建16个数据库，redisServer里面有数据库列表指针和数据库数量的记录。"/>
+
+
+<link rel="stylesheet" href="/css/github-markdown.css" />
+<link rel="stylesheet" href="/css/semantic.min.css" />
+<link rel="stylesheet" href="/css/site.css" />
+
+
+
+
+
+  </head>
+
+  
+  <body style="background-image: url(https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/bg/mountains-covered-in-snow-mid.jpg);">
+  
+    <div class="flip-container">
+      <div class="flipper">
+        <section class="front">
+          
+<nav class="ui secondary menu dream-menu">
+
+  <div class="item">
+    <i class="large link bullseye icon dream-flip-toggle" title="Flip it!"></i>
+  </div>
+  <div class="item">
+    <i class="large link home icon" title="Home" onclick="window.location.href = 'http:\/\/www.shenjianan.top\/'"></i>
+  </div>
+  <div class="item">
+    <i class="large link icon theme-switch" onclick="themeSwitch()"></i>
+  </div>
+</nav>
+
+          
+<div class="ui centered relaxed grid dream-grid">
+  <div class="sixteen wide mobile sixteen wide tablet twelve wide computer column markdown-body dream-single">
+
+    <section class="ui top attached segment" id="dream-save-post-as-img">
+      <header style="margin-top: 0 !important;">
+        <h2 class="ui header">
+          Redis设计与实现——数据库列表与结构体
+          <div class="sub header">@ Shen Jianan · Saturday, Jun 4, 2016 · 11 minute read · Update at Jun 4, 2016</div>
+        </h2>
+      </header>
+      <article style="margin-top: 2rem;"><h1 id="数据库">数据库</h1>
+<h2 id="数据库列表">数据库列表</h2>
+<p>redis.h/redisServer是Redis服务器的数据结构，保存所有的服务器状态。</p>
+<p>一个Redis服务器默认会创建16个数据库，redisServer里面有数据库列表指针和数据库数量的记录。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">struct</span> redisServer {
+
+	<span style="color:#75715e">//...
+</span><span style="color:#75715e"></span>
+    <span style="color:#75715e">// 数据库
+</span><span style="color:#75715e"></span>    redisDb <span style="color:#f92672">*</span>db;
+    
+    <span style="color:#75715e">//...
+</span><span style="color:#75715e"></span>    
+    <span style="color:#66d9ef">int</span> dbnum;                      <span style="color:#75715e">/* Total number of configured DBs */</span>
+
+    <span style="color:#75715e">//...
+</span><span style="color:#75715e"></span>};
+</code></pre></div><p>redis.h/redisClient在切换数据库的时候，就会将redisClient中的db指针指向具体的数据库。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> redisClient {
+	<span style="color:#75715e">//...
+</span><span style="color:#75715e"></span>	
+	<span style="color:#75715e">// 当前正在使用的数据库
+</span><span style="color:#75715e"></span>	redisDb <span style="color:#f92672">*</span>db;
+	
+	<span style="color:#75715e">//...
+</span><span style="color:#75715e"></span>} redisClient;
+</code></pre></div><h2 id="redisdb结构">redisDb结构</h2>
+<p>redis.h/redisDb表示一个数据库，其中包含有当前数据库所有的键值对、键的过期时间字典、阻塞中的键、可以解除阻塞的键、正被监视的键和数据库号码等信息。相对redisServer和redisClient来说是很简单的数据结构，主要就是服务于键值处理。其中的键值都只是指针，真正的键值对象都在别处分配内存。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* Redis database representation. There are multiple databases identified
+</span><span style="color:#75715e"> * by integers from 0 (the default database) up to the max configured
+</span><span style="color:#75715e"> * database. The database number is the &#39;id&#39; field in the structure. */</span>
+<span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> redisDb {
+
+    <span style="color:#75715e">// 数据库键空间，保存着数据库中的所有键值对
+</span><span style="color:#75715e"></span>    dict <span style="color:#f92672">*</span>dict;                 <span style="color:#75715e">/* The keyspace for this DB */</span>
+
+    <span style="color:#75715e">// 键的过期时间，字典的键为键，字典的值为过期事件 UNIX 时间戳
+</span><span style="color:#75715e"></span>    dict <span style="color:#f92672">*</span>expires;              <span style="color:#75715e">/* Timeout of keys with a timeout set */</span>
+
+    <span style="color:#75715e">// 正处于阻塞状态的键
+</span><span style="color:#75715e"></span>    dict <span style="color:#f92672">*</span>blocking_keys;        <span style="color:#75715e">/* Keys with clients waiting for data (BLPOP) */</span>
+
+    <span style="color:#75715e">// 可以解除阻塞的键
+</span><span style="color:#75715e"></span>    dict <span style="color:#f92672">*</span>ready_keys;           <span style="color:#75715e">/* Blocked keys that received a PUSH */</span>
+
+    <span style="color:#75715e">// 正在被 WATCH 命令监视的键
+</span><span style="color:#75715e"></span>    dict <span style="color:#f92672">*</span>watched_keys;         <span style="color:#75715e">/* WATCHED keys for MULTI/EXEC CAS */</span>
+
+    <span style="color:#66d9ef">struct</span> evictionPoolEntry <span style="color:#f92672">*</span>eviction_pool;    <span style="color:#75715e">/* Eviction pool of keys */</span>
+
+    <span style="color:#75715e">// 数据库号码
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> id;                     <span style="color:#75715e">/* Database ID */</span>
+
+    <span style="color:#75715e">// 数据库的键的平均 TTL ，统计信息
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> avg_ttl;          <span style="color:#75715e">/* Average TTL, just for stats */</span>
+
+} redisDb;
+</code></pre></div><p>增删改查实际上就是对dict和dict指向的键值进行的操作，在对数据库进行读写的时候，服务器还会更新命中次数、不命中次数和LRU。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">struct</span> redisServer{
+
+	<span style="color:#75715e">//...
+</span><span style="color:#75715e"></span>	
+    <span style="color:#75715e">// 最近一次使用时钟
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> lruclock:REDIS_LRU_BITS; <span style="color:#75715e">/* Clock for LRU eviction */</span>
+	
+	<span style="color:#75715e">//...
+</span><span style="color:#75715e"></span>
+    <span style="color:#75715e">// 成功查找键的次数
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> stat_keyspace_hits;   <span style="color:#75715e">/* Number of successful lookups of keys */</span>
+
+    <span style="color:#75715e">// 查找键失败的次数
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> stat_keyspace_misses; <span style="color:#75715e">/* Number of failed lookups of keys */</span>
+    
+    <span style="color:#75715e">//...
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>在读写之前，服务器会先检查是否过期，如果过期则需要删除这个键，下面是getCommand底层依赖的取值方法：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/*
+</span><span style="color:#75715e"> * 为执行读取操作而取出键 key 在数据库 db 中的值。
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * 并根据是否成功找到值，更新服务器的命中/不命中信息。
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * 找到时返回值对象，没找到返回 NULL 。
+</span><span style="color:#75715e"> */</span>
+robj <span style="color:#f92672">*</span><span style="color:#a6e22e">lookupKeyRead</span>(redisDb <span style="color:#f92672">*</span>db, robj <span style="color:#f92672">*</span>key) {
+    robj <span style="color:#f92672">*</span>val;
+
+    <span style="color:#75715e">// 检查 key 释放已经过期
+</span><span style="color:#75715e"></span>    expireIfNeeded(db,key);
+
+    <span style="color:#75715e">// 从数据库中取出键的值
+</span><span style="color:#75715e"></span>    val <span style="color:#f92672">=</span> lookupKey(db,key);
+
+    <span style="color:#75715e">// 更新命中/不命中信息
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (val <span style="color:#f92672">==</span> NULL)
+        server.stat_keyspace_misses<span style="color:#f92672">++</span>;
+    <span style="color:#66d9ef">else</span>
+        server.stat_keyspace_hits<span style="color:#f92672">++</span>;
+
+    <span style="color:#75715e">// 返回值
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> val;
+}
+</code></pre></div><p>关于WATCH键，被WATCH命令监视的键都会被标记为dirty，每修改一个键之后，都会对dirty键计数器的值增1，这个计数器会出发服务器的持久化以及复制操作。</p>
+<h2 id="redis过期键删除策略">Redis过期键删除策略</h2>
+<p>Redis使用惰性删除和定期删除两种策略。</p>
+<h3 id="惰性删除">惰性删除</h3>
+<p>db.c中的方法都是数据库级别的操作，比如过期时间、清空键、数据库大小、覆写等。</p>
+<p>惰性删除的函数实现是db.c/expireIfNeeded。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/*
+</span><span style="color:#75715e"> * 检查 key 是否已经过期，如果是的话，将它从数据库中删除。
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * 返回 0 表示键没有过期时间，或者键未过期。
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * 返回 1 表示键已经因为过期而被删除了。
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">expireIfNeeded</span>(redisDb <span style="color:#f92672">*</span>db, robj <span style="color:#f92672">*</span>key) {
+
+    <span style="color:#75715e">// 取出键的过期时间
+</span><span style="color:#75715e"></span>    mstime_t when <span style="color:#f92672">=</span> getExpire(db,key);
+    mstime_t now;
+
+    <span style="color:#75715e">// 没有过期时间说明永不过期
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (when <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>) <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">/* No expire for this key */</span>
+
+    <span style="color:#75715e">/* Don&#39;t expire anything while loading. It will be done later. */</span>
+    <span style="color:#75715e">// 如果服务器正在进行载入，那么不进行任何过期检查
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (server.loading) <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+
+    <span style="color:#75715e">/* If we are in the context of a Lua script, we claim that time is
+</span><span style="color:#75715e">     * blocked to when the Lua script started. This way a key can expire
+</span><span style="color:#75715e">     * only the first time it is accessed and not in the middle of the
+</span><span style="color:#75715e">     * script execution, making propagation to slaves / AOF consistent.
+</span><span style="color:#75715e">     * See issue #1525 on Github for more information. */</span>
+    now <span style="color:#f92672">=</span> server.lua_caller <span style="color:#f92672">?</span> server.lua_time_start : mstime();
+
+    <span style="color:#75715e">/* If we are running in the context of a slave, return ASAP:
+</span><span style="color:#75715e">     * the slave key expiration is controlled by the master that will
+</span><span style="color:#75715e">     * send us synthesized DEL operations for expired keys.
+</span><span style="color:#75715e">     *
+</span><span style="color:#75715e">     * Still we try to return the right information to the caller, 
+</span><span style="color:#75715e">     * that is, 0 if we think the key should be still valid, 1 if
+</span><span style="color:#75715e">     * we think the key is expired at this time. */</span>
+    <span style="color:#75715e">// 当服务器运行在 replication 模式时
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 附属节点并不主动删除 key
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 它只返回一个逻辑上正确的返回值
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 真正的删除操作要等待主节点发来删除命令时才执行
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 从而保证数据的同步
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (server.masterhost <span style="color:#f92672">!=</span> NULL) <span style="color:#66d9ef">return</span> now <span style="color:#f92672">&gt;</span> when;
+
+    <span style="color:#75715e">// 运行到这里，表示键带有过期时间，并且服务器为主节点
+</span><span style="color:#75715e"></span>
+    <span style="color:#75715e">/* Return when this key has not expired */</span>
+    <span style="color:#75715e">// 如果未过期，返回 0
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (now <span style="color:#f92672">&lt;=</span> when) <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+
+    <span style="color:#75715e">/* Delete the key */</span>
+    server.stat_expiredkeys<span style="color:#f92672">++</span>;
+
+    <span style="color:#75715e">// 向 AOF 文件和附属节点传播过期信息
+</span><span style="color:#75715e"></span>    propagateExpire(db,key);
+
+    <span style="color:#75715e">// 发送事件通知
+</span><span style="color:#75715e"></span>    notifyKeyspaceEvent(REDIS_NOTIFY_EXPIRED,
+        <span style="color:#e6db74">&#34;expired&#34;</span>,key,db<span style="color:#f92672">-&gt;</span>id);
+
+    <span style="color:#75715e">// 将过期键从数据库中删除
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> dbDelete(db,key);
+}
+</code></pre></div><p>单单使用惰性删除会导致过期但是不再被访问的键占用大量空间，因此还需要使用定期删除来周期性地删除过期键。定期删除的函数是redis.c/activeExpireCycle，下面是被它调用的activeExpireCycleTryExpire:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* ======================= Cron: called every 100 ms ======================== */</span>
+
+<span style="color:#75715e">/* Helper function for the activeExpireCycle() function.
+</span><span style="color:#75715e"> * This function will try to expire the key that is stored in the hash table
+</span><span style="color:#75715e"> * entry &#39;de&#39; of the &#39;expires&#39; hash table of a Redis database.
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * activeExpireCycle() 函数使用的检查键是否过期的辅佐函数。
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * If the key is found to be expired, it is removed from the database and
+</span><span style="color:#75715e"> * 1 is returned. Otherwise no operation is performed and 0 is returned.
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * 如果 de 中的键已经过期，那么移除它，并返回 1 ，否则不做动作，并返回 0 。
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * When a key is expired, server.stat_expiredkeys is incremented.
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * The parameter &#39;now&#39; is the current time in milliseconds as is passed
+</span><span style="color:#75715e"> * to the function to avoid too many gettimeofday() syscalls.
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * 参数 now 是毫秒格式的当前时间
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">activeExpireCycleTryExpire</span>(redisDb <span style="color:#f92672">*</span>db, dictEntry <span style="color:#f92672">*</span>de, <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> now) {
+    <span style="color:#75715e">// 获取键的过期时间
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> t <span style="color:#f92672">=</span> dictGetSignedIntegerVal(de);
+    <span style="color:#66d9ef">if</span> (now <span style="color:#f92672">&gt;</span> t) {
+
+        <span style="color:#75715e">// 键已过期
+</span><span style="color:#75715e"></span>
+        sds key <span style="color:#f92672">=</span> dictGetKey(de);
+        robj <span style="color:#f92672">*</span>keyobj <span style="color:#f92672">=</span> createStringObject(key,sdslen(key));
+
+        <span style="color:#75715e">// 传播过期命令
+</span><span style="color:#75715e"></span>        propagateExpire(db,keyobj);
+        <span style="color:#75715e">// 从数据库中删除该键
+</span><span style="color:#75715e"></span>        dbDelete(db,keyobj);
+        <span style="color:#75715e">// 发送事件
+</span><span style="color:#75715e"></span>        notifyKeyspaceEvent(REDIS_NOTIFY_EXPIRED,
+            <span style="color:#e6db74">&#34;expired&#34;</span>,keyobj,db<span style="color:#f92672">-&gt;</span>id);
+        decrRefCount(keyobj);
+        <span style="color:#75715e">// 更新计数器
+</span><span style="color:#75715e"></span>        server.stat_expiredkeys<span style="color:#f92672">++</span>;
+        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+    } <span style="color:#66d9ef">else</span> {
+
+        <span style="color:#75715e">// 键未过期
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+    }
+}
+</code></pre></div><p>这里的dbDelete会删除这个数据库里面的过期时间、键值对，但是decrRefCount不一定会释放这个值的内存，因为可能有别的值引用了这个对象。只有当refCount降到0的时候，才会释放它的内存。下面是db.c/decrRefCount的函数：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* Delete a key, value, and associated expiration entry if any, from the DB 
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * 从数据库中删除给定的键，键的值，以及键的过期时间。
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * 删除成功返回 1 ，因为键不存在而导致删除失败时，返回 0 。
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">dbDelete</span>(redisDb <span style="color:#f92672">*</span>db, robj <span style="color:#f92672">*</span>key) {
+
+    <span style="color:#75715e">/* Deleting an entry from the expires dict will not free the sds of
+</span><span style="color:#75715e">     * the key, because it is shared with the main dictionary. */</span>
+    <span style="color:#75715e">// 删除键的过期时间
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (dictSize(db<span style="color:#f92672">-&gt;</span>expires) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) dictDelete(db<span style="color:#f92672">-&gt;</span>expires,key<span style="color:#f92672">-&gt;</span>ptr);
+
+    <span style="color:#75715e">// 删除键值对
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (dictDelete(db<span style="color:#f92672">-&gt;</span>dict,key<span style="color:#f92672">-&gt;</span>ptr) <span style="color:#f92672">==</span> DICT_OK) {
+        <span style="color:#75715e">// 如果开启了集群模式，那么从槽中删除给定的键
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> (server.cluster_enabled) slotToKeyDel(key);
+        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+    } <span style="color:#66d9ef">else</span> {
+        <span style="color:#75715e">// 键不存在
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+    }
+}
+</code></pre></div><p>下面是定期删除过期键的函数activeExpireCycle，它不会强求一次性将所有的过期键删除，而是在一个规定的时间内删除一部分的过期时间，并且在一段时间后再启动。在前期的启动模式判断、变量初始化之后，计算轮到清理的数据库，并且将数据库号加一，也就是说就算数据库0没有在当前时限内处理完毕，下次也依旧会处理数据库1，相当于时间片轮转的清理方式。</p>
+<p>在对数据库进行清理之前，代码会先检查带有过期时间的键值对数量，记录当前时间，如果所有键值对都是永不过期的或者可过期键值对占比小于1%，那就直接跳过这个数据库；如果可过期键数量M超过<strong>ACTIVE_EXPIRE_CYCLE_LOOKUPS_PER_LOOP</strong>，还要只检查<strong>ACTIVE_EXPIRE_CYCLE_LOOKUPS_PER_LOOP</strong>个键。在这之后，进行M次循环，每次循环随机取一个键，如果已经过期则删除之(调用activeExpireCycleTryExpire)，更新统计数据。每进行16次遍历，就检查是否已经超过时间限制，如果超过则结束此过程。</p>
+<p>最后，每次遍历都会进行检查。如果已经删除了带过期时间键数量的25%，则不再进行遍历，转而处理下一个数据库。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* Try to expire a few timed out keys. The algorithm used is adaptive and
+</span><span style="color:#75715e"> * will use few CPU cycles if there are few expiring keys, otherwise
+</span><span style="color:#75715e"> * it will get more aggressive to avoid that too much memory is used by
+</span><span style="color:#75715e"> * keys that can be removed from the keyspace.
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * 函数尝试删除数据库中已经过期的键。
+</span><span style="color:#75715e"> * 当带有过期时间的键比较少时，函数运行得比较保守，
+</span><span style="color:#75715e"> * 如果带有过期时间的键比较多，那么函数会以更积极的方式来删除过期键，
+</span><span style="color:#75715e"> * 从而可能地释放被过期键占用的内存。
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * No more than REDIS_DBCRON_DBS_PER_CALL databases are tested at every
+</span><span style="color:#75715e"> * iteration.
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * 每次循环中被测试的数据库数目不会超过 REDIS_DBCRON_DBS_PER_CALL 。
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * This kind of call is used when Redis detects that timelimit_exit is
+</span><span style="color:#75715e"> * true, so there is more work to do, and we do it more incrementally from
+</span><span style="color:#75715e"> * the beforeSleep() function of the event loop.
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * 如果 timelimit_exit 为真，那么说明还有更多删除工作要做，
+</span><span style="color:#75715e"> * 那么在 beforeSleep() 函数调用时，程序会再次执行这个函数。
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * Expire cycle type:
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * 过期循环的类型：
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * If type is ACTIVE_EXPIRE_CYCLE_FAST the function will try to run a
+</span><span style="color:#75715e"> * &#34;fast&#34; expire cycle that takes no longer than EXPIRE_FAST_CYCLE_DURATION
+</span><span style="color:#75715e"> * microseconds, and is not repeated again before the same amount of time.
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * 如果循环的类型为 ACTIVE_EXPIRE_CYCLE_FAST ，
+</span><span style="color:#75715e"> * 那么函数会以“快速过期”模式执行，
+</span><span style="color:#75715e"> * 执行的时间不会长过 EXPIRE_FAST_CYCLE_DURATION 毫秒，
+</span><span style="color:#75715e"> * 并且在 EXPIRE_FAST_CYCLE_DURATION 毫秒之内不会再重新执行。
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * If type is ACTIVE_EXPIRE_CYCLE_SLOW, that normal expire cycle is
+</span><span style="color:#75715e"> * executed, where the time limit is a percentage of the REDIS_HZ period
+</span><span style="color:#75715e"> * as specified by the REDIS_EXPIRELOOKUPS_TIME_PERC define. 
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * 如果循环的类型为 ACTIVE_EXPIRE_CYCLE_SLOW ，
+</span><span style="color:#75715e"> * 那么函数会以“正常过期”模式执行，
+</span><span style="color:#75715e"> * 函数的执行时限为 REDIS_HS 常量的一个百分比，
+</span><span style="color:#75715e"> * 这个百分比由 REDIS_EXPIRELOOKUPS_TIME_PERC 定义。
+</span><span style="color:#75715e"> */</span>
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">activeExpireCycle</span>(<span style="color:#66d9ef">int</span> type) {
+    <span style="color:#75715e">/* This function has some global state in order to continue the work
+</span><span style="color:#75715e">     * incrementally across calls. */</span>
+    <span style="color:#75715e">// 静态变量，用来累积函数连续执行时的数据
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> current_db <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">/* Last DB tested. */</span>
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> timelimit_exit <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;      <span style="color:#75715e">/* Time limit hit in previous call? */</span>
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> last_fast_cycle <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">/* When last fast cycle ran. */</span>
+
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> j, iteration <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    <span style="color:#75715e">// 默认每次处理的数据库数量
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> dbs_per_call <span style="color:#f92672">=</span> REDIS_DBCRON_DBS_PER_CALL;
+    <span style="color:#75715e">// 函数开始的时间
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> start <span style="color:#f92672">=</span> ustime(), timelimit;
+
+    <span style="color:#75715e">// 快速模式
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (type <span style="color:#f92672">==</span> ACTIVE_EXPIRE_CYCLE_FAST) {
+        <span style="color:#75715e">/* Don&#39;t start a fast cycle if the previous cycle did not exited
+</span><span style="color:#75715e">         * for time limt. Also don&#39;t repeat a fast cycle for the same period
+</span><span style="color:#75715e">         * as the fast cycle total duration itself. */</span>
+        <span style="color:#75715e">// 如果上次函数没有触发 timelimit_exit ，那么不执行处理
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>timelimit_exit) <span style="color:#66d9ef">return</span>;
+        <span style="color:#75715e">// 如果距离上次执行未够一定时间，那么不执行处理
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> (start <span style="color:#f92672">&lt;</span> last_fast_cycle <span style="color:#f92672">+</span> ACTIVE_EXPIRE_CYCLE_FAST_DURATION<span style="color:#f92672">*</span><span style="color:#ae81ff">2</span>) <span style="color:#66d9ef">return</span>;
+        <span style="color:#75715e">// 运行到这里，说明执行快速处理，记录当前时间
+</span><span style="color:#75715e"></span>        last_fast_cycle <span style="color:#f92672">=</span> start;
+    }
+
+    <span style="color:#75715e">/* We usually should test REDIS_DBCRON_DBS_PER_CALL per iteration, with
+</span><span style="color:#75715e">     * two exceptions:
+</span><span style="color:#75715e">     *
+</span><span style="color:#75715e">     * 一般情况下，函数只处理 REDIS_DBCRON_DBS_PER_CALL 个数据库，
+</span><span style="color:#75715e">     * 除非：
+</span><span style="color:#75715e">     *
+</span><span style="color:#75715e">     * 1) Don&#39;t test more DBs than we have.
+</span><span style="color:#75715e">     *    当前数据库的数量小于 REDIS_DBCRON_DBS_PER_CALL
+</span><span style="color:#75715e">     * 2) If last time we hit the time limit, we want to scan all DBs
+</span><span style="color:#75715e">     * in this iteration, as there is work to do in some DB and we don&#39;t want
+</span><span style="color:#75715e">     * expired keys to use memory for too much time. 
+</span><span style="color:#75715e">     *     如果上次处理遇到了时间上限，那么这次需要对所有数据库进行扫描，
+</span><span style="color:#75715e">     *     这可以避免过多的过期键占用空间
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">if</span> (dbs_per_call <span style="color:#f92672">&gt;</span> server.dbnum <span style="color:#f92672">||</span> timelimit_exit)
+        dbs_per_call <span style="color:#f92672">=</span> server.dbnum;
+
+    <span style="color:#75715e">/* We can use at max ACTIVE_EXPIRE_CYCLE_SLOW_TIME_PERC percentage of CPU time
+</span><span style="color:#75715e">     * per iteration. Since this function gets called with a frequency of
+</span><span style="color:#75715e">     * server.hz times per second, the following is the max amount of
+</span><span style="color:#75715e">     * microseconds we can spend in this function. */</span>
+    <span style="color:#75715e">// 函数处理的微秒时间上限
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// ACTIVE_EXPIRE_CYCLE_SLOW_TIME_PERC 默认为 25 ，也即是 25 % 的 CPU 时间
+</span><span style="color:#75715e"></span>    timelimit <span style="color:#f92672">=</span> <span style="color:#ae81ff">1000000</span><span style="color:#f92672">*</span>ACTIVE_EXPIRE_CYCLE_SLOW_TIME_PERC<span style="color:#f92672">/</span>server.hz<span style="color:#f92672">/</span><span style="color:#ae81ff">100</span>;
+    timelimit_exit <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    <span style="color:#66d9ef">if</span> (timelimit <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">0</span>) timelimit <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+
+    <span style="color:#75715e">// 如果是运行在快速模式之下
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 那么最多只能运行 FAST_DURATION 微秒 
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 默认值为 1000 （微秒）
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (type <span style="color:#f92672">==</span> ACTIVE_EXPIRE_CYCLE_FAST)
+        timelimit <span style="color:#f92672">=</span> ACTIVE_EXPIRE_CYCLE_FAST_DURATION; <span style="color:#75715e">/* in microseconds. */</span>
+
+    <span style="color:#75715e">// 遍历数据库
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">for</span> (j <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; j <span style="color:#f92672">&lt;</span> dbs_per_call; j<span style="color:#f92672">++</span>) {
+        <span style="color:#66d9ef">int</span> expired;
+        <span style="color:#75715e">// 指向要处理的数据库
+</span><span style="color:#75715e"></span>        redisDb <span style="color:#f92672">*</span>db <span style="color:#f92672">=</span> server.db<span style="color:#f92672">+</span>(current_db <span style="color:#f92672">%</span> server.dbnum);
+
+        <span style="color:#75715e">/* Increment the DB now so we are sure if we run out of time
+</span><span style="color:#75715e">         * in the current DB we&#39;ll restart from the next. This allows to
+</span><span style="color:#75715e">         * distribute the time evenly across DBs. */</span>
+        <span style="color:#75715e">// 为 DB 计数器加一，如果进入 do 循环之后因为超时而跳出
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 那么下次会直接从下个 DB 开始处理
+</span><span style="color:#75715e"></span>        current_db<span style="color:#f92672">++</span>;
+
+        <span style="color:#75715e">/* Continue to expire if at the end of the cycle more than 25%
+</span><span style="color:#75715e">         * of the keys were expired. */</span>
+        <span style="color:#66d9ef">do</span> {
+            <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">long</span> num, slots;
+            <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> now, ttl_sum;
+            <span style="color:#66d9ef">int</span> ttl_samples;
+
+            <span style="color:#75715e">/* If there is nothing to expire try next DB ASAP. */</span>
+            <span style="color:#75715e">// 获取数据库中带过期时间的键的数量
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// 如果该数量为 0 ，直接跳过这个数据库
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> ((num <span style="color:#f92672">=</span> dictSize(db<span style="color:#f92672">-&gt;</span>expires)) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+                db<span style="color:#f92672">-&gt;</span>avg_ttl <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+                <span style="color:#66d9ef">break</span>;
+            }
+            <span style="color:#75715e">// 获取数据库中键值对的数量
+</span><span style="color:#75715e"></span>            slots <span style="color:#f92672">=</span> dictSlots(db<span style="color:#f92672">-&gt;</span>expires);
+            <span style="color:#75715e">// 当前时间
+</span><span style="color:#75715e"></span>            now <span style="color:#f92672">=</span> mstime();
+
+            <span style="color:#75715e">/* When there are less than 1% filled slots getting random
+</span><span style="color:#75715e">             * keys is expensive, so stop here waiting for better times...
+</span><span style="color:#75715e">             * The dictionary will be resized asap. */</span>
+            <span style="color:#75715e">// 这个数据库的使用率低于 1% ，扫描起来太费力了（大部分都会 MISS）
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// 跳过，等待字典收缩程序运行
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> (num <span style="color:#f92672">&amp;&amp;</span> slots <span style="color:#f92672">&gt;</span> DICT_HT_INITIAL_SIZE <span style="color:#f92672">&amp;&amp;</span>
+                (num<span style="color:#f92672">*</span><span style="color:#ae81ff">100</span><span style="color:#f92672">/</span>slots <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1</span>)) <span style="color:#66d9ef">break</span>;
+
+            <span style="color:#75715e">/* The main collection cycle. Sample random keys among keys
+</span><span style="color:#75715e">             * with an expire set, checking for expired ones. 
+</span><span style="color:#75715e">             *
+</span><span style="color:#75715e">             * 样本计数器
+</span><span style="color:#75715e">             */</span>
+            <span style="color:#75715e">// 已处理过期键计数器
+</span><span style="color:#75715e"></span>            expired <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+            <span style="color:#75715e">// 键的总 TTL 计数器
+</span><span style="color:#75715e"></span>            ttl_sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+            <span style="color:#75715e">// 总共处理的键计数器
+</span><span style="color:#75715e"></span>            ttl_samples <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+
+            <span style="color:#75715e">// 每次最多只能检查 LOOKUPS_PER_LOOP 个键
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> (num <span style="color:#f92672">&gt;</span> ACTIVE_EXPIRE_CYCLE_LOOKUPS_PER_LOOP)
+                num <span style="color:#f92672">=</span> ACTIVE_EXPIRE_CYCLE_LOOKUPS_PER_LOOP;
+
+            <span style="color:#75715e">// 开始遍历数据库
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">while</span> (num<span style="color:#f92672">--</span>) {
+                dictEntry <span style="color:#f92672">*</span>de;
+                <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> ttl;
+
+                <span style="color:#75715e">// 从 expires 中随机取出一个带过期时间的键
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">if</span> ((de <span style="color:#f92672">=</span> dictGetRandomKey(db<span style="color:#f92672">-&gt;</span>expires)) <span style="color:#f92672">==</span> NULL) <span style="color:#66d9ef">break</span>;
+                <span style="color:#75715e">// 计算 TTL
+</span><span style="color:#75715e"></span>                ttl <span style="color:#f92672">=</span> dictGetSignedIntegerVal(de)<span style="color:#f92672">-</span>now;
+                <span style="color:#75715e">// 如果键已经过期，那么删除它，并将 expired 计数器增一
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">if</span> (activeExpireCycleTryExpire(db,de,now)) expired<span style="color:#f92672">++</span>;
+                <span style="color:#66d9ef">if</span> (ttl <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>) ttl <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+                <span style="color:#75715e">// 累积键的 TTL
+</span><span style="color:#75715e"></span>                ttl_sum <span style="color:#f92672">+=</span> ttl;
+                <span style="color:#75715e">// 累积处理键的个数
+</span><span style="color:#75715e"></span>                ttl_samples<span style="color:#f92672">++</span>;
+            }
+
+            <span style="color:#75715e">/* Update the average TTL stats for this database. */</span>
+            <span style="color:#75715e">// 为这个数据库更新平均 TTL 统计数据
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> (ttl_samples) {
+                <span style="color:#75715e">// 计算当前平均值
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> avg_ttl <span style="color:#f92672">=</span> ttl_sum<span style="color:#f92672">/</span>ttl_samples;
+                
+                <span style="color:#75715e">// 如果这是第一次设置数据库平均 TTL ，那么进行初始化
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">if</span> (db<span style="color:#f92672">-&gt;</span>avg_ttl <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) db<span style="color:#f92672">-&gt;</span>avg_ttl <span style="color:#f92672">=</span> avg_ttl;
+                <span style="color:#75715e">/* Smooth the value averaging with the previous one. */</span>
+                <span style="color:#75715e">// 取数据库的上次平均 TTL 和今次平均 TTL 的平均值
+</span><span style="color:#75715e"></span>                db<span style="color:#f92672">-&gt;</span>avg_ttl <span style="color:#f92672">=</span> (db<span style="color:#f92672">-&gt;</span>avg_ttl<span style="color:#f92672">+</span>avg_ttl)<span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>;
+            }
+
+            <span style="color:#75715e">/* We can&#39;t block forever here even if there are many keys to
+</span><span style="color:#75715e">             * expire. So after a given amount of milliseconds return to the
+</span><span style="color:#75715e">             * caller waiting for the other active expire cycle. */</span>
+            <span style="color:#75715e">// 我们不能用太长时间处理过期键，
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// 所以这个函数执行一定时间之后就要返回
+</span><span style="color:#75715e"></span>
+            <span style="color:#75715e">// 更新遍历次数
+</span><span style="color:#75715e"></span>            iteration<span style="color:#f92672">++</span>;
+
+            <span style="color:#75715e">// 每遍历 16 次执行一次
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> ((iteration <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xf</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#75715e">/* check once every 16 iterations. */</span>
+                (ustime()<span style="color:#f92672">-</span>start) <span style="color:#f92672">&gt;</span> timelimit)
+            {
+                <span style="color:#75715e">// 如果遍历次数正好是 16 的倍数
+</span><span style="color:#75715e"></span>                <span style="color:#75715e">// 并且遍历的时间超过了 timelimit
+</span><span style="color:#75715e"></span>                <span style="color:#75715e">// 那么断开 timelimit_exit
+</span><span style="color:#75715e"></span>                timelimit_exit <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+            }
+
+            <span style="color:#75715e">// 已经超时了，返回
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> (timelimit_exit) <span style="color:#66d9ef">return</span>;
+
+            <span style="color:#75715e">/* We don&#39;t repeat the cycle if there are less than 25% of keys
+</span><span style="color:#75715e">             * found expired in the current DB. */</span>
+            <span style="color:#75715e">// 如果已删除的过期键占当前总数据库带过期时间的键数量的 25 %
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// 那么不再遍历
+</span><span style="color:#75715e"></span>        } <span style="color:#66d9ef">while</span> (expired <span style="color:#f92672">&gt;</span> ACTIVE_EXPIRE_CYCLE_LOOKUPS_PER_LOOP<span style="color:#f92672">/</span><span style="color:#ae81ff">4</span>);
+    }
+}
+</code></pre></div><h2 id="aofedb和复制功能对过期键的处理">AOF、EDB和复制功能对过期键的处理</h2>
+<h3 id="rdb模式">RDB模式</h3>
+<p>执行SAVE或者BGSAVE的时候，程序会将未过期的键值保存到新创建的RDB文件中。而当启动Redis的时候，只要开启了RDB功能，那么就会载入RDB文件。</p>
+<ul>
+<li>如果是主服务器，那么载入时会对保存的键进行检查，只读取未过期的键。</li>
+<li>如果是从服务器，那么不会检查是否过期。不过主服务器在和从服务器同步的时候会清空从服务器的数据，所以一般来说也没什么影响。</li>
+</ul>
+<h3 id="aof模式">AOF模式</h3>
+<p>当以AOF持久化模式运行时，键只有被删除的时候才会向AOF文件追加一条DEL命令。</p>
+<p>在执行AOF重写的过程中，程序也会检查键是否过期，只读取未过期的键。</p>
+<h3 id="复制模式">复制模式</h3>
+<p>当运行在复制模式下时，从服务器的过期键删除操作由主服务器控制。</p>
+<ul>
+<li>主服务器在删除过期键的时候会主动向所有的从服务器发送DEL命令</li>
+<li>从服务器读写键值的时候，依然会返回过期键，只有在接到DEL命令的时候才会删除过期键。</li>
+</ul>
+<h2 id="数据库通知">数据库通知</h2>
+<p>数据库通知是Redis 2.8新增的功能，可以让客户端通过订阅的方式获得键的变化与命令执行情况。发送通知的功能是通过notify.c/notifyKeyspaceEvent函数实现的。</p></article>
+    </section>
+
+    <footer class="ui attached segment dream-tags">
+      
+        
+          <a class="ui label" href="/tags/redis" title="Redis">Redis</a>
+        
+          <a class="ui label" href="/tags/%E7%AC%94%E8%AE%B0" title="笔记">笔记</a>
+        
+      
+      <div
+        class="ui label"
+        style="float: right; background: #1b1c1d !important; cursor: pointer;"
+        onclick="savePostAsImg()">
+        <i class="save icon"></i> Save as image
+      </div>
+    </footer>
+
+    
+      <footer class="ui attached segment">
+        <strong>欢迎通过<a href="mailto:shen_jianan@foxmail.com">邮箱</a>(shen_jianan@foxmail.com)探讨问题</strong> <br/><br/><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可。 <br />
+      </footer>
+    
+
+    
+
+  </div>
+  <div class="sixteen wide mobile sixteen wide tablet four wide computer column">
+    <article class="dream-header">
+  <section class="ui top attached center aligned segment">
+    <div class="ui small circular image">
+      
+        <img src="https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/avatars/totoro3.jpeg?x-oss-process=style/compress">
+      
+    </div>
+
+    <h1 class="ui medium header">Shen Jianan&#39;s blog<div class="sub header" style="margin-top: 0.5rem;">Freedom as Autonomy</div>
+    </h1>
+
+    <div class="ui horizontal list">
+      
+      <a class="item" href="/posts">
+        <i class="archive icon" title="Archives"></i>
+      </a>
+      
+      <a class="item" href="/tags">
+        <i class="tags icon" title="All Tags"></i>
+      </a>
+      <a class="item" href="/categories">
+        <i class="th list icon" title="All Categories"></i>
+      </a>
+    </div>
+  </section>
+
+  
+  <section class="ui attached center aligned segment dream-tags">
+    
+      <a class="ui label" href="/tags/hbase" title="hbase">hbase</a>
+    
+      <a class="ui label" href="/tags/java" title="java">java</a>
+    
+      <a class="ui label" href="/tags/redis" title="redis">redis</a>
+    
+      <a class="ui label" href="/tags/ruby" title="ruby">ruby</a>
+    
+      <a class="ui label" href="/tags/%E4%B9%A0%E9%A2%98" title="习题">习题</a>
+    
+      <a class="ui label" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F" title="分布式">分布式</a>
+    
+      <a class="ui label" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0" title="机器学习">机器学习</a>
+    
+      <a class="ui label" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C" title="神经网络">神经网络</a>
+    
+      <a class="ui label" href="/tags/%E7%AC%94%E8%AE%B0" title="笔记">笔记</a>
+    
+      <a class="ui label" href="/tags/%E7%AE%97%E6%B3%95" title="算法">算法</a>
+    
+      <a class="ui label" href="/tags/%E7%AE%97%E6%B3%95%E5%BC%95%E6%93%8E" title="算法引擎">算法引擎</a>
+    
+      <a class="ui label" href="/tags/%E8%AE%BA%E6%96%87" title="论文">论文</a>
+    
+  </section>
+  
+
+  
+  <section class="ui attached segment dream-categories">
+    <div class="ui accordion">
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/java" class="item">java</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/java/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" class="item">Java并发编程实战 读书笔记</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/redis" class="item">redis</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E4%BA%8B%E4%BB%B6/" class="item">Redis设计与实现——事件</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0aof%E6%8C%81%E4%B9%85%E5%8C%96/" class="item">Redis设计与实现——AOF持久化</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0rdb%E6%8C%81%E4%B9%85%E5%8C%96/" class="item">Redis设计与实现——RDB持久化</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%97%E8%A1%A8%E4%B8%8E%E7%BB%93%E6%9E%84%E4%BD%93/" class="item">Redis设计与实现——数据库列表与结构体</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0sds%E5%93%88%E5%B8%8C%E8%A1%A8/" class="item">Redis设计与实现——SDS哈希表</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/redis/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0sds%E5%AE%9E%E7%8E%B0%E4%B8%8E%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB/" class="item">Redis设计与实现——SDS实现与代码解读</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/ruby" class="item">ruby</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-5/" class="item">Ruby元编程 星期五</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-4/" class="item">Ruby元编程 星期四</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-3/" class="item">Ruby元编程 星期三</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-2/" class="item">Ruby元编程 星期二</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/ruby/ruby%E5%85%83%E7%BC%96%E7%A8%8B-week-1/" class="item">Ruby元编程 星期一</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/%E4%B9%A0%E9%A2%98" class="item">习题</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/exercises/2020-11-07/" class="item">习题2020-11-07</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F" class="item">分布式</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/distributed/raft%E6%A6%82%E8%AE%BA/" class="item">Raft概论</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/distributed/bigtable%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-%E4%B8%AA%E4%BA%BA%E7%BF%BB%E8%AF%91/" class="item">BigTable论文阅读&amp;个人翻译</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/distributed/hbase%E5%AE%9E%E6%88%98%E9%9A%8F%E7%AC%94%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C/" class="item">《HBase实战》随笔——数据操作</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0" class="item">机器学习</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E4%BC%98%E5%8C%96%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%A1%A8%E7%8E%B0%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E6%B3%95/" class="item">优化神经网络表现的几种方法</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E8%83%8C%E5%90%8E%E7%9A%84%E5%9B%9B%E4%B8%AA%E5%9F%BA%E6%9C%AC%E7%AD%89%E5%BC%8F/" class="item">反向传播背后的四个基本等式</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" class="item">神经网络基础知识</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-ex6/" class="item">机器学习 ex6</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E6%A0%B8%E5%87%BD%E6%95%B0/" class="item">核函数</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/machinelearning/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E8%AE%A1%E7%AE%97%E8%BF%87%E7%A8%8B%E7%AC%94%E8%AE%B0/" class="item">神经网络反向传播计算过程笔记</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/%E7%AE%97%E6%B3%95" class="item">算法</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/algorithm/%E5%86%8D%E6%8E%A2%E6%8E%92%E5%BA%8F/" class="item">再探排序</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/algorithm/%E4%BA%8C%E5%8F%89%E6%A0%91-%E7%BA%A2%E9%BB%91%E6%A0%91%E5%B0%8F%E7%BB%93/" class="item">简单搜索二叉树&amp;红黑树小结</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/algorithm/%E7%BA%BF%E6%80%A7%E6%97%B6%E9%97%B4%E6%8E%92%E5%BA%8F/" class="item">线性时间排序</a>
+              </div>
+            </div>
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/algorithm/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E5%B0%8F%E7%BB%93/" class="item">快速排序算法小结</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <a href="/categories/%E7%AE%97%E6%B3%95%E5%BC%95%E6%93%8E" class="item">算法引擎</a>
+        </div>
+        <div class="content">
+          <div class="ui list">
+          
+            <div class="item">
+              <div class="content">
+                <a href="http://www.shenjianan.top/posts/algorithmengine/faiss%E5%90%91%E9%87%8F%E5%8F%AC%E5%9B%9E%E5%BC%95%E6%93%8E%E5%A6%82%E4%BD%95%E5%81%9A%E5%88%B0%E5%BF%AB%E9%80%9F%E6%9F%A5%E6%89%BE%E6%9C%80%E8%BF%91%E9%82%BB/" class="item">Faiss向量召回引擎如何做到快速查找最近邻</a>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      
+    </div>
+  </section>
+  
+
+  <section class="ui attached segment header-socials">
+    <nav class="ui secondary menu dream-menu dream-socials">
+  
+    <div class="item">
+      <i class=" mail icon" title="email"></i> 
+      <a href="mailto:shen_jianan@foxmail.com">
+        shen_jianan@foxmail.com
+      </a>
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</nav>
+
+  </section>
+
+  <section class="ui bottom attached center aligned segment">
+    
+      <p>© 2015 - 2020 Shen Jianan的随缘更新</p>
+    
+
+    <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</p>
+  </section>
+</article>
+
+
+  </div>
+</div>
+
+        </section>
+        <section class="back">
+          
+<nav class="ui secondary menu dream-menu">
+
+  <div class="item">
+    <i class="large link bullseye icon dream-flip-toggle" title="Flip it!"></i>
+  </div>
+  <div class="item">
+    <i class="large link home icon" title="Home" onclick="window.location.href = 'http:\/\/www.shenjianan.top\/'"></i>
+  </div>
+  <div class="item">
+    <i class="large link icon theme-switch" onclick="themeSwitch()"></i>
+  </div>
+</nav>
+
+          <div class="ui centered relaxed grid dream-grid dream-back">
+  
+    <section class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+      <article>
+        <div class="ui top attached segment">
+          <h3 class="ui header">About Me</h3>
+        </div>
+        <div class="ui attached segment markdown-body">
+          <h4 id="201802至今emsp杭州嘉云数据-算法引擎">2018.02至今 杭州嘉云数据 算法引擎</h4>
+<h4 id="20176-201712emsp菜网络-工智能部-算法引擎">2017.6-2017.12 菜⻦网络-⼈工智能部-算法引擎</h4>
+<h4 id="201609-201806emsp南京大学研究生">2016.09-2018.06 南京大学研究生</h4>
+<h4 id="201507-201509emsp阿里巴巴-icbu-实习">2015.07-2015.09 阿里巴巴-ICBU-实习</h4>
+<h4 id="201209-201606emsp南京大学本科">2012.09-2016.06 南京大学本科</h4>
+
+        </div>
+      </article>
+    </section>
+  
+
+  <section class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+    <article>
+      <div class="ui top attached segment">
+        <h3 class="ui header">Social Links</h3>
+      </div>
+      <div class="ui attached segment">
+        <nav class="ui secondary menu dream-menu dream-socials">
+  
+    <div class="item">
+      <i class="large mail icon" title="email"></i> 
+      <a href="mailto:shen_jianan@foxmail.com">
+        shen_jianan@foxmail.com
+      </a>
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</nav>
+
+      </div>
+    </article>
+  </section>
+
+  <section class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+    
+      <footer class="ui segment">
+        <strong>欢迎通过<a href="mailto:shen_jianan@foxmail.com">邮箱</a>(shen_jianan@foxmail.com)探讨问题</strong> <br/><br/><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可。 <br />
+      </footer>
+    
+  </section>
+
+  
+  
+</div>
+
+        </section>
+      </div>
+    </div>
+
+    <script src="/js/jquery.min.js"></script>
+<script src="/js/semantic.min.js"></script>
+<script src="/js/imagesloaded.pkgd.min.js"></script>
+<script src="/js/masonry.pkgd.min.js"></script>
+<script src="/js/nav.js"></script>
+<script src="/js/header.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/theme.js"></script>
+<script src="/js/html2canvas.min.js"></script>
+
+
+
+  </body>
+</html>
