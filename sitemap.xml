@@ -4,26 +4,46 @@
   
   <url>
     <loc>http://www.shenjianan.top/categories/</loc>
-    <lastmod>2020-06-18T14:33:37+08:00</lastmod>
+    <lastmod>2020-11-11T13:48:46+08:00</lastmod>
   </url>
   
   <url>
     <loc>http://www.shenjianan.top/posts/</loc>
-    <lastmod>2020-06-18T14:33:37+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://www.shenjianan.top/posts/distributed/raft%E6%A6%82%E8%AE%BA/</loc>
-    <lastmod>2020-06-18T14:33:37+08:00</lastmod>
+    <lastmod>2020-11-11T13:48:46+08:00</lastmod>
   </url>
   
   <url>
     <loc>http://www.shenjianan.top/</loc>
-    <lastmod>2020-06-18T14:33:37+08:00</lastmod>
+    <lastmod>2020-11-11T13:48:46+08:00</lastmod>
   </url>
   
   <url>
     <loc>http://www.shenjianan.top/tags/</loc>
+    <lastmod>2020-11-11T13:48:46+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.shenjianan.top/tags/%E5%9F%BA%E6%95%B0%E7%BB%9F%E8%AE%A1/</loc>
+    <lastmod>2020-11-11T13:48:46+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.shenjianan.top/posts/algorithm/%E5%9F%BA%E6%95%B0%E7%BB%9F%E8%AE%A1/</loc>
+    <lastmod>2020-11-11T13:48:46+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.shenjianan.top/tags/%E7%AE%97%E6%B3%95/</loc>
+    <lastmod>2020-11-11T13:48:46+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.shenjianan.top/categories/%E7%AE%97%E6%B3%95/</loc>
+    <lastmod>2020-11-11T13:48:46+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.shenjianan.top/posts/distributed/raft%E6%A6%82%E8%AE%BA/</loc>
     <lastmod>2020-06-18T14:33:37+08:00</lastmod>
   </url>
   
@@ -49,16 +69,6 @@
   
   <url>
     <loc>http://www.shenjianan.top/posts/algorithmengine/faiss%E5%90%91%E9%87%8F%E5%8F%AC%E5%9B%9E%E5%BC%95%E6%93%8E%E5%A6%82%E4%BD%95%E5%81%9A%E5%88%B0%E5%BF%AB%E9%80%9F%E6%9F%A5%E6%89%BE%E6%9C%80%E8%BF%91%E9%82%BB/</loc>
-    <lastmod>2020-04-26T11:32:08+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://www.shenjianan.top/tags/%E7%AE%97%E6%B3%95/</loc>
-    <lastmod>2020-04-26T11:32:08+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://www.shenjianan.top/categories/%E7%AE%97%E6%B3%95/</loc>
     <lastmod>2020-04-26T11:32:08+08:00</lastmod>
   </url>
   

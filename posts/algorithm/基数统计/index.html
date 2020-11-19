@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>
-线性时间排序
+基数统计
 </title>
 
     
@@ -15,28 +15,30 @@
 
   
   <meta name="author" content="Shen Jianan" />
-  <meta name="description" content="任何基于决策树的比较排序在最坏情况下都要经过$\Omega(nlgn)$次比较。因此，任何已知的比较排序最多在常数因子上优于归并排序和堆排序。
+  <meta name="description" content="应用场景 基数统计(Cardinality Counting)指计算一个数据集中不同元素的数量，在很多场景都需要这样的功能：电商场景中的独立用户(UV)数量统计、数据库中快速计算字段取值数量以优化query、计算与某个站点相关的不同链接数量等。
 " />
 
 
 
 <meta name="generator" content="Hugo 0.68.3" />
 
-<link rel="canonical" href="http://www.shenjianan.top/posts/algorithm/%E7%BA%BF%E6%80%A7%E6%97%B6%E9%97%B4%E6%8E%92%E5%BA%8F/" />
+<link rel="canonical" href="http://www.shenjianan.top/posts/algorithm/%E5%9F%BA%E6%95%B0%E7%BB%9F%E8%AE%A1/" />
 
 
-<meta property="og:title" content="线性时间排序" />
-<meta property="og:description" content="任何基于决策树的比较排序在最坏情况下都要经过$\Omega(nlgn)$次比较。因此，任何已知的比较排序最多在常数因子上优于归并排序和堆排序。" />
+<meta property="og:title" content="基数统计" />
+<meta property="og:description" content="应用场景
+基数统计(Cardinality Counting)指计算一个数据集中不同元素的数量，在很多场景都需要这样的功能：电商场景中的独立用户(UV)数量统计、数据库中快速计算字段取值数量以优化query、计算与某个站点相关的不同链接数量等。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://www.shenjianan.top/posts/algorithm/%E7%BA%BF%E6%80%A7%E6%97%B6%E9%97%B4%E6%8E%92%E5%BA%8F/" />
-<meta property="article:published_time" content="2015-09-23T16:23:53+00:00" />
-<meta property="article:modified_time" content="2015-09-23T16:23:53+00:00" />
+<meta property="og:url" content="http://www.shenjianan.top/posts/algorithm/%E5%9F%BA%E6%95%B0%E7%BB%9F%E8%AE%A1/" />
+<meta property="article:published_time" content="2020-11-11T13:48:46+08:00" />
+<meta property="article:modified_time" content="2020-11-11T13:48:46+08:00" />
 
 
 
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="线性时间排序"/>
-<meta name="twitter:description" content="任何基于决策树的比较排序在最坏情况下都要经过$\Omega(nlgn)$次比较。因此，任何已知的比较排序最多在常数因子上优于归并排序和堆排序。"/>
+<meta name="twitter:title" content="基数统计"/>
+<meta name="twitter:description" content="应用场景
+基数统计(Cardinality Counting)指计算一个数据集中不同元素的数量，在很多场景都需要这样的功能：电商场景中的独立用户(UV)数量统计、数据库中快速计算字段取值数量以优化query、计算与某个站点相关的不同链接数量等。"/>
 
 
 <link rel="stylesheet" href="/css/github-markdown.css" />
@@ -76,69 +78,169 @@
     <section class="ui top attached segment" id="dream-save-post-as-img">
       <header style="margin-top: 0 !important;">
         <h2 class="ui header">
-          线性时间排序
-          <div class="sub header">@ Shen Jianan · Wednesday, Sep 23, 2015 · 2 minute read · Update at Sep 23, 2015</div>
+          基数统计
+          <div class="sub header">@ Shen Jianan · Wednesday, Nov 11, 2020 · 9 minute read · Update at Nov 11, 2020</div>
         </h2>
       </header>
-      <article style="margin-top: 2rem;"><p>任何基于决策树的比较排序在最坏情况下都要经过$\Omega(nlgn)$次比较。因此，任何已知的比较排序最多在常数因子上优于归并排序和堆排序。</p>
-<h1 id="计数排序">计数排序</h1>
-<p>计数排序假设n个输入元素中的每一个都是在0到k之间的一个整数。对每个输入元素x，如果有i个元素小于x,那么x就被放在i+1的位置上。</p>
-<p>在计数排序的算法中，输入数组为A[1..n]，那么需要B[1..n]来放置排序结果，C[1..k]来提供临时的存储空间。由此可见，计数排序适合于数值范围相较于元素数目不大的情况，也就是k=O(n)的情况。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">counting_sort</span>():
-    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> A:
-        B[i] <span style="color:#f92672">=</span> B[i]<span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;  <span style="color:#75715e">#大小为i的数量</span>
-
-    cur <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, B<span style="color:#f92672">.</span>__len__()):
-        <span style="color:#66d9ef">for</span> j <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, B[i]):     <span style="color:#75715e">#有几个为i的值，就将结果放入C几次</span>
-            C[cur] <span style="color:#f92672">=</span> i;
-            cur <span style="color:#f92672">=</span> cur<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>;
-</code></pre></div><h1 id="基数排序">基数排序</h1>
-<p>基数排序对数字的每一位进行排序，排序顺序是由低到高。不采用由高到低的理由是：如果使用由高到低的排序顺序，那么10个容器中的9个必须暂时不管放在一边。这样效率会比较低。</p>
-<p>基数排序的代码比较简单&hellip;其实是对每一位上使用排序算法，大概是这样的画风：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">radix_sort</span>():
-	<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>,d):
-		<span style="color:#75715e">#对第i位使用稳定的排序算法</span>
-</code></pre></div><h1 id="桶排序">桶排序</h1>
-<p>桶排序假设输入数据服从均匀分布，平均情况下时间代价为0(n)。如果有冲突，需要在同一个槽中使用排序算法进行排序。在下面的代码中，quick_sort就是处理冲突时使用的排序。当然，在冲突不多的时候，用插入排序性能应该更好一点。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">B <span style="color:#f92672">=</span> [[] <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">10</span>)];
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">bucket_sort</span>():
-    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> A:
-        B[int(i<span style="color:#f92672">/</span><span style="color:#ae81ff">10</span>)]<span style="color:#f92672">.</span>append(i);
-
-    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, B<span style="color:#f92672">.</span>__len__()):
-        quick_sort(B[i], <span style="color:#ae81ff">0</span>, B[i]<span style="color:#f92672">.</span>__len__()<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>);
-        <span style="color:#66d9ef">for</span> j <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, B[i]<span style="color:#f92672">.</span>__len__()):
-            <span style="color:#66d9ef">print</span>(B[i][j]);
-
-
-
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">quick_sort</span>(L, p, r):
-    <span style="color:#66d9ef">if</span> (p <span style="color:#f92672">&gt;=</span> r):
-        <span style="color:#66d9ef">return</span>;  <span style="color:#75715e"># 只有一个元素,不需要再排序</span>
-
-    q <span style="color:#f92672">=</span> L[p];  <span style="color:#75715e"># 取第一个数字为比较变量</span>
-    j <span style="color:#f92672">=</span> p;  <span style="color:#75715e"># 索引j从第二个数字开始</span>
-    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(p <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>, r <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>):
-        <span style="color:#66d9ef">if</span> (L[i] <span style="color:#f92672">&lt;</span> q):
-            j <span style="color:#f92672">=</span> j <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
-            swap(L, i, j);  <span style="color:#75715e"># j自增，并将边界右边的大值和当前的小值交换位置。</span>
-    swap(L, p, j);  <span style="color:#75715e"># 最后将比较标量和边界的小值交换，整体完成有序(数组1，q，数组2)</span>
-    quick_sort(L, p, j <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>);
-    quick_sort(L, j <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>, r);
-
-
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">swap</span>(L, a, b):
-    tmp <span style="color:#f92672">=</span> L[a];
-    L[a] <span style="color:#f92672">=</span> L[b];
-    L[b] <span style="color:#f92672">=</span> tmp;
-</code></pre></div></article>
+      <article style="margin-top: 2rem;"><h1 id="应用场景">应用场景</h1>
+<p>基数统计(Cardinality Counting)指计算一个数据集中不同元素的数量，在很多场景都需要这样的功能：电商场景中的独立用户(UV)数量统计、数据库中快速计算字段取值数量以优化query、计算与某个站点相关的不同链接数量等。</p>
+<p>为实现这样的功能，最直观的方法就是使用 Set 记录每一个元素，在数量巨大的情况下，会造成大量的内存占用。以存储 $2^{30}$ (约10亿)个长度为64bit的url为例，需要占用 $64*2^{30} = 64GB$ 的空间。Set方案的空间占用与元素的数量成正比，空间复杂度为 $O(N)$</p>
+<p>如果使用bitmap来存储，则需要将不同的url映射到不同的数字。即使最理想的情况下，url之间没有冲突，且从1到 $2^{30}$ 都没有空闲，bitmap也需要占用 $2^{30}\div 8 = 2^{27} = 128MB$ 的空间。bitmap方案占用空间只与最大取值有关系，与元素数量无关。极端情况下，即使只有一个url，在这个例子中也需要占用128MB的空间，空间复杂度为 $O(N_{max})$</p>
+<p>以上两种方式都对基数进行精确统计，但是很多时候只需要一个大概的数量，只要误差在一定范围内即可。接下来要讨论的几种算法可以在牺牲一定精确性的情况下，大幅度降低空间占用。</p>
+<h1 id="linear-counting">Linear Counting</h1>
+<p>诞生于1990年的论文“A linear-time probabilistic counting algorithm for database applications“，相比bitmap有常数项的空间复杂度优化，但整体还是 $O(N_{max})$ 。</p>
+<p align="center"><img style="zoom:50%" src="https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/images/algorithms/cardinality_estimation/lc_hash.png")>
+</p> 
+<h2 id="主要步骤">主要步骤</h2>
+<ol>
+<li>数据哈希：假设原始数据的基数为n，使用一组哈希空间为m的哈希函数H，将原始数据均匀分组。</li>
+<li>分桶数据统计：构建一个长度为m的bitmap，其中每一个bit对应哈希空间的一个值。生成哈希数组的值如果存在，则把相应的bit设置为1。</li>
+<li>数量估计：当所有值设置完成后，统计bitmap中为0的bit数为u。则估计的基数为 $\hat{n} = -m \log {\frac{u}{m}}$。</li>
+</ol>
+<h2 id="基数公式推导">基数公式推导</h2>
+<p>记事件 $A_j$ 为“经过n个数字哈希之后，桶j仍然为空”，则 $$P(A_j) = (1-\frac{1}{m})^n$$</p>
+<p>记 $U_n$ 为经过n个数字哈希之后，仍然为空的桶数量。因为各个桶之间互相独立，所以 $E(U_n) = m(1-\frac{1}{m})^n = m[(1+\frac{1}{-m})^{-m}]^{-\frac{n}{m}}$</p>
+<p>当m趋向于无穷大时，$\lim_{m \to \infty} E(U_n) = \lim_{m \to \infty } m[(1+\frac{1}{-m})^{-m}]^{-\frac{n}{m}} = me^{-\frac{n}{m}}$</p>
+<p>得到 $n = -m \log{\frac{E(U_n)}{m}}$</p>
+<p>由于每个桶的取值都服从参数相同的0-1分布，所以$U_n$符合二项分布。当n很大的时候，可以用正态分布逼近二项分布，$U_n$ 的概率密度函数为：</p>
+<p>$f(x) = \frac{1}{\sigma \sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2{\sigma}^2}}$</p>
+<p>因此我们实际观察到的空桶数量 $u$ 可以作为 $E(U_n)$ 的无偏估计，由于 $= -m \log{\frac{x}{m}}$ 是可逆函数，可以把 $\hat{n}$ 作为理论 $n$ 的无偏估计。</p>
+<h2 id="误差估计">误差估计</h2>
+<h3 id="偏差">偏差</h3>
+<p>记装载因子 $t=\frac{n}{m}$ , 空桶比例 $V_n = \frac{U_n}{m}$ , 空桶数量期望 $p = E(V_n)=\frac{E(U_n)}{m} = e^{-\frac{n}{m}} = e^{-t}$</p>
+<p>记$-\ln(V_n) = f(V_n)$，则$\hat{n} = m*(-\ln{\frac{u}{m}})=mf(V_n)$</p>
+<p>在 $V_n$  处进行泰勒展式:</p>
+<p>$$ \hat{n} = mf(V_n) = m(f(p)+(V_n-p)f&rsquo;(p)+\frac{1}{2}(V_n-p)^2f&rsquo;'(p)+\frac{1}{6}(V_n-p)^3f&rsquo;''(p)&hellip;.) $$</p>
+<p>$$=m(t-\frac{V_n-p}{p}+\frac{(V_n-p)^2}{2p^2}-\frac{(V_n-p)^3}{3p^3}+\frac{(V_n-p)^4}{4p^4}&hellip;.)$$</p>
+<p>取前三项:</p>
+<p>$$E(\hat{n}) = mt-\frac{mE(V_n-p)}{p} + \frac{E(V_n-p)^2}{2p^2}$$</p>
+<p>由于 $p=E(V_n)$ , $E(V_n)-p=0$</p>
+<p>所以可以化简为
+$$E(\hat{n}) = mt+\frac{m}{2p^2}E(V_n-p)^2$$</p>
+<p>其中
+$$E(V_n-p)^2 = Var(V_n) = (\frac{1}{m})e^{-t}(1-(1+t)e^{-t})$$</p>
+<p>$Var(V_n)$ 通过 $Var(X) = E(X^2)-E(X)^2$ 得到，计算的具体过程可以见论文Appendix A。</p>
+<p>最终 $$E(\hat{n}) = n+\frac{e^t-t-1}{2}$$</p>
+<p>$$Bias(\frac{\hat{n}}{n}) = E(\frac{\hat{n}}{n})-1 = \frac{e^t-t-1}{2n}$$</p>
+<p>从中得到一个显然的结论：m越大，偏差越小。</p>
+<h3 id="标准差">标准差</h3>
+<p>取泰勒展式的前两项， $\hat{n} = m(t-\frac{V_n-p}{p})$</p>
+<p>$$Var(\frac{\hat{n}}{n}) = \frac{1}{n^2}(\frac{m^2}{p^2} Var(V_n-p)) =\frac{1}{n^2}(\frac{m^2}{p^2} Var(V_n)) =\frac{1}{n^2}(\frac{m^2}{p^2} \frac{1}{m})p(1-(1+t)p) = \frac{m(e^t-t-1)}{n^2}$$</p>
+<p>具体过程见论文的Appendix C，得 $StdError(\frac{\hat{n}}{n}) = \frac{\sqrt{m(e^t-t-1)}}{n}$</p>
+<p>其中 $t=\frac{n}{m}$ 。对m求导得到 $\frac{1}{m}(e^{\frac{n}{m}}(m-n)-1)$，由于m小于n，这是一个对m的递减函数，因此分桶数量越大，标准差越小。</p>
+<h2 id="长度m的选择">长度m的选择</h2>
+<h3 id="误差控制">误差控制</h3>
+<p>如果我们需要将误差控制在 $\epsilon$ 以下，即
+$$\frac{\sqrt{m(e^t-t-1)}}{n} = \frac{\sqrt{\frac{e^t-t-1}{t}}}{t} \lt \epsilon$$
+得到m的最小数量为
+$$m \gt \frac{e^t-t-1}{(\epsilon t)^2}$$</p>
+<h3 id="满桶控制">满桶控制</h3>
+<p align="center"><img style="zoom:50%" src="https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/images/algorithms/cardinality_estimation/linear_counting_m_length.png")>
+</p> 
+注意到，如果每个桶的都置为1，即 $u=0$ ，那么 $\hat{n} = -m \log {\frac{u}{m}}$ 就会趋向于无穷大，失去意义。但只要m<n，就总有概率导致 $u=0$，我们追求的是这个概率足够小
+<p>$n \to +\infty$，则 $U_n$ 的二项分布可近似为正态分布</p>
+<p>可以通过让 $U_n$ 的期望相比0的偏移大于若干倍的 $U_n$ 标准差来控制：
+$$E(U_n)-a\times StdDev(U_n) &gt;0$$
+代入 $E(U_n)=me^{-t}$ 和 $StdDev(U_n)=(me^{-t}(1-(1+t)e^{-t}))^{\frac{1}{2}}$，得到</p>
+<p>$$m&gt;a^2(e^t-t-1)$$</p>
+<h3 id="结合两个限制条件">结合两个限制条件</h3>
+<p>结合误差控制和满桶控制，最终m在期望误差内的最小长度为:
+$$m&gt;\beta (e^t-t-1), \quad \beta=max(a^2, \frac{1}{(\epsilon t)^2})$$</p>
+<h3 id="确定a">确定a</h3>
+<p>u满足二项分布，当n非常大而落进一个桶的概率 $p=\frac{1}{m}$ 非常小时，可以用泊松分布进行近似
+$$\lim_{n,m \to \infty}Pr(U_n=k) =\frac{\lambda^k}{k!}e^{-\lambda} $$
+因此，满桶的概率为
+$$Pr(U_n=0)=e^{-\lambda}$$
+如果要满桶的概率小于1%，只要 $e^{-\lambda}&lt;0.01$，得到 $\lambda&gt;5$，所以只要 $U_n$ 的期望与0偏离为 $\sqrt{5}$ 即可保证满桶的概率小于 1%。同理，可以将概率设置为其他值来求出对应的a，满桶概率越小需要的a越大。</p>
+<h2 id="空间复杂度">空间复杂度</h2>
+<p>在 $a=\sqrt{5}$ 的情况下，作者对不同规模n下m的最小长度进行了计算，随着m和n的增大，m大约为n的十分之一。因此LC所需要的空间只有传统的bitmap直接映射方法的1/10，但整体空间复杂度仍为 $O(N_{max})$。结果如下表</p>
+<p align="center"><img style="zoom:50%" src="https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/images/algorithms/cardinality_estimation/linear_counting_table.png")>
+</p> 
+仍以 $n=2^{30}$ 为例，通过计算机求解得到 $\epsilon=0.01$时, $m=75402422$，因此空间占用为 $m/8/1024/1024=9$ MB，约为bitmap方案的 $9MB/128MB = \frac{1}{14}$ ，与表中的比例数量级相符。
+<h2 id="并集与交集">并集与交集</h2>
+<p>只要哈希函数和m相同，Linear Counting支持对多个记录进行合并计算。
+如果要计算两个集合的并集 $set_size(R_1 \cup R_2)$，可以简单进行 OR 运算得到新的bitmap，然后计算出估计结果。
+如果要计算两个集合的交集，可以通过两集合和并集间接算出来： $set_size(R_1 \cap R_2) = set_size(R_1)+set_size(R_2)-set_size(R_1 \cup R_2)$</p>
+<p align="center"><img style="zoom:50%" src="https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/images/algorithms/cardinality_estimation/linear_counting_union.png")>
+</p> 
+<h2 id="问题">问题</h2>
+<p>Linear Counting在n过大时，会导致bitmap满桶，此时误差就会变为无穷大。</p>
+<h1 id="loglog-counting">LogLog Counting</h1>
+<p>Linear Counting虽然有了常数级的优化，但空间复杂度仍然是 $O(N)$ 级别，而LogLog Counting却如其名只有 $O(\log_2(\log_2 (N))$ 的空间复杂度。目前在处理大数据的基数问题时，采用的方法基本都是LogLog Counting的几个变种。</p>
+<h2 id="主要步骤-1">主要步骤</h2>
+<p>与Linear Counting一样，LogLog Counting 需要选取一个哈希函数H应用于所有元素，然后对哈希值进行基数估计。H必须满足如下条件：</p>
+<p>1、具有很好的均匀性：无论原始值如何分布，其哈希结果的值都服从均匀分布（完全服从均匀分布是不可能的，但是很多哈希函数可以生成几乎服从均匀分布的结果）。</p>
+<p>2、H的碰撞几乎可以忽略不计：对于不同的原始值，其哈希结果相同的概率非常小。</p>
+<p>3、H的哈希结果是固定长度的。</p>
+<p align="center"><img style="zoom:50%" src="https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/images/algorithms/cardinality_estimation/loglog_counting1.png")>
+</p> 
+<p>设a是经过H哈希后的一个值，长度固定为L。因为经过H的哈希结果服从均匀分布，所以a中每个比特的取值为1的概率都是0.5，且相互独立。记 $\rho (a)$ 为a的比特串中第一个“1”出现的位置， $\rho_{max}$ 为所有元素哈希后 $\rho (a)$ 的最大值。</p>
+<p>则对于总量的估计为 $\hat{n} = 2^{\rho_{max}}$</p>
+<h2 id="粗糙估计">粗糙估计</h2>
+<p>为什么可以这样估计呢？</p>
+<p>由于比特串每个比特都独立且服从0-1分布，因此从左到右扫描上述某个比特串寻找第一个“1”的过程从统计学角度看是一个伯努利过程，例如，可以等价看作不断抛硬币直到正面的过程。这样的过程中投掷一次就得到正面的概率为$\frac{1}{2}$，投掷两次得到正面的概率是$\frac{1}{2^2}$，…，投掷k次才得到第一个正面的概率为 $\frac{1}{2^k}$。</p>
+<p>现在如果进行n次伯努利过程，所有投掷次数都不大于k的概率和至少有一次投掷次数大于k的概率分别为:</p>
+<p>$$P_n(X \le k) = (1-\frac{1}{2^k})^n$$</p>
+<p>$$P_n(X \ge k) = 1-(1-\frac{1}{2^k})^n$$</p>
+<p>由此可见，当 $n \ll 2^k$ 时，$P_n(X \ge k)$ 几乎为零； $n \gg 2^k$ 时，$P_n(X \le k)$ 也几乎为零。从这里就可以衍生出一个结论：如果对n个元素进行哈希后，得到 $\rho_max$ ，则 $P(2^{\rho} \ll n)$ 和 $P(2^{\rho} \gg n)$ 都几乎为零， $2^{\rho}$ 可以作为n的一个粗糙估计。</p>
+<h2 id="分桶平均">分桶平均</h2>
+<p>但是上述的估计实在太粗糙了，因此 LogLog Counting使用分桶平均的方式，根据前k个bit，将哈希空间平分为 $m=2^k$ 份，每个桶都单独维护一个 $\rho_{max}$，形成一个数组 $M$。在进行哈希的时候，根据一个元素的前k个bit确定桶编号i，剩余的bit按照上述的步骤更新 $M[i]$ 的 $\rho_{max}$，最终估计时取所有桶的平均值再进行估计。</p>
+<p>$$\hat{n} = 2^{\frac{\Sigma{M[i]}}{m}}$$</p>
+<p align="center"><img style="zoom:50%" src="https://shenjianan-blog.oss-cn-beijing.aliyuncs.com/images/algorithms/cardinality_estimation/loglog_counting_mean.png")>
+</p> 
+<h2 id="误差修正">误差修正</h2>
+<p>分桶平均只是减少了误差，但是仍然基于粗糙的估计，因此论文对其进行了修正以达到无偏估计。</p>
+<p>这部分需要大量的数学分析，只提一下分析的框架：</p>
+<p>$$P_n(X = k) = ((1-\frac{1}{2^k})^n)-((1-\frac{1}{2^{k-1}})^n)$$</p>
+<p>构建指数生成函数，通过poissonization得到估计量的 $Poisson$  期望和方差后，通过de-poissonization 得到一个渐近无偏估计量：</p>
+<p>$\hat{n} = \alpha_m2^{\frac{1}{m}\Sigma{M[i]}}$</p>
+<p>其中</p>
+<p>$\alpha_m = (\Gamma (-\frac{1}{m})\frac{1-2^{\frac{1}{m}}}{\log 2})^{-m}$</p>
+<p>$$\Gamma(s) = \frac{1}{s} \int_{0}^{\infty}{e^{-t}t^s},dt$$</p>
+<h2 id="误差分析">误差分析</h2>
+<p>不加证明得给出结论：</p>
+<p>当 $m \gt 64$ 时</p>
+<p>$StdError(\frac{\hat{n}}{n}) \approx \frac{1.3}{\sqrt{m}}$</p>
+<p>如果要将误差控制在 $\epsilon$ 之内，则</p>
+<p>$$m \gt (\frac{1.30}{\epsilon})^2$$</p>
+<h2 id="空间复杂度-1">空间复杂度</h2>
+<p>内存使用与m的大小及哈希值长度有关，如果统计的基数大小为n，则$\rho_{max} \ge O(\log_2{\frac{n}{m}})$，对应保存 $M$ 的空间为 $O(m \times \log_2{\rho_{max}}) $，在m固定时，空间复杂度为 $O(log_2(log_2n))$
+假设哈希后长度为64bit，则 $\rho_{max} \le 64$，因此每个桶需要 $\log_2{64} = 6$ bit的空间来存储 $\rho_{max}$，分成m个桶即 $\frac{6\times m}{8}$ 字节。当分桶数m为1024时，误差为 $1.3 \div \sqrt{1024} \approx 4%$，需要的字节数就是 $6\times 1024 \div 8 = 768B$ ，比起Linear Counting的 9MB 有了5个数量级的下降。</p>
+<h2 id="并集与交集-1">并集与交集</h2>
+<p>LogLog Counting也支持计算两个集合的并集基数，区别在于LogLog Counting以桶为单位，而Linear Counting以bit为单位。由于LogLog Counting只需要记录桶的 $\rho_{max}$，所以合并的时候取相同桶编号中较大的 $\rho_{max}$即可。</p>
+<h2 id="问题-1">问题</h2>
+<p>LogLog Counting比Linear Counting的节约了指数级的空间，但是它误差控制在 $\frac{1.3}{\sqrt{m}}$的前提是n远大于m。在n比较小的时候，它的估计误差就会很大。</p>
+<h1 id="adaptive-counting">Adaptive Counting</h1>
+<h2 id="主要改进">主要改进</h2>
+<p>Linear Counting和LogLog Counting的存储结构其实是兼容的，只要统计LogLog Counting的$\rho_{max}$ 是否为0就可以退化为Linear Counting。
+既然两者的存储结构兼容，而又各自擅长n较小和n较大的情况，Adaptive Counting就提出通过寻找一个分段点，让两者的优点互补。
+Linear Counting和LogLog Counting的标准误差为
+$$StdError_{linear_counint}(\frac{\hat{n}}{n}) = \frac{\sqrt{e^t-t-1}}{t\sqrt{m}}$$
+$$StdError_{loglog counting}(\frac{\hat{n}}{n}) = \frac{1.3}{\sqrt{m}}$$</p>
+<p>两式联立
+$$ \frac{\sqrt{e^t-t-1}}{t\sqrt{m}} = \frac{1.3}{\sqrt{m}}$$</p>
+<p>即可得到相交点 $t \approx 2.89$，其中 $t=\frac{n}{m}$，此时Linear Counting的空桶率 $\beta = e^{-t} \approx 0.051$
+所以Adaptive Counting中，估算公式为：</p>
+<p>$$ \hat{n} = \begin{cases} \alpha_m{m2^{\frac{\Sigma{M}}{m}}} , \text{if} , 0 \le \beta \le 0.051 \\ -m\ln(\beta) , \text{if} , 0.051 \le \beta \le 1 \end{cases}$$</p>
+<p>因为AC只是LC和LLC的简单组合，所以误差分析可以依照LC和LLC进行。值得注意的是，当<em>β</em>&lt;0.051时，LLC最大的偏差不超过0.17%，因此可以近似认为是无偏的。</p>
+<h1 id="hyperloglog-counting">HyperLogLog Counting</h1>
+<h2 id="主要改进-1">主要改进</h2>
+<h3 id="调和平均数以减少离群值影响">调和平均数以减少离群值影响</h3>
+<p>HLLC的第一个改进是使用调和平均数替代几何平均数。注意LLC是对各个桶取算数平均数，而算数平均数最终被应用到2的指数上，所以总体来看LLC取得是几何平均数。由于几何平均数对于离群值（例如0）特别敏感，因此当存在离群值时，LLC的偏差就会很大，这也从另一个角度解释了为什么n不太大时LLC的效果不太好。这是因为n较小时，可能存在较多空桶，而这些特殊的离群值强烈干扰了几何平均数的稳定性。</p>
+<p>因此，HLLC使用调和平均数来代替几何平均数，可以有效抵抗离群值的扰动。使用调和平均数代替几何平均数后，估计公式变为如下：</p>
+<p>$\hat{n} =\frac{\alpha_m m^2}{\Sigma{2^{-M}}}, \quad \alpha_m = (m\int_0^{\infty}(\log_2(\frac{2+u}{1+u}))^m , du)^{-1}$</p>
+<p>HLLC通过这样改进将误差从$\frac{1.3}{\sqrt{m}}$ 优化到了 $\frac{1.04}{\sqrt{m}}$，而空间复杂度与LLC相同。</p>
+<h3 id="分段偏差修正">分段偏差修正</h3>
+<p>给出了在n较小或较大时的偏差修正方案，具体来说
+$$ 估算方法 = \begin{cases} \begin{aligned} Linear Counting, &amp;if ,  E \le \frac{5m}{2} \\ HyperLogLog Counting , &amp;if ,  \frac{5m}{2} \lt E \le \frac{2^{32}}{30} \\ -2^{32}\log(1-\frac{E}{2^{32}}) , &amp;if , E \gt  \frac{2^{32}}{30} \end{aligned}\end{cases}$$</p></article>
     </section>
 
     <footer class="ui attached segment dream-tags">
       
         
           <a class="ui label" href="/tags/%E7%AE%97%E6%B3%95" title="算法">算法</a>
+        
+          <a class="ui label" href="/tags/%E5%9F%BA%E6%95%B0%E7%BB%9F%E8%AE%A1" title="基数统计">基数统计</a>
         
       
       <div
