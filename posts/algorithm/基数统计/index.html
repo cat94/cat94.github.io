@@ -84,7 +84,7 @@
       </header>
       <article style="margin-top: 2rem;"><h1 id="应用场景">应用场景</h1>
 <p>基数统计(Cardinality Counting)指计算一个数据集中不同元素的数量，在很多场景都需要这样的功能：电商场景中的独立用户(UV)数量统计、数据库中快速计算字段取值数量以优化query、计算与某个站点相关的不同链接数量等。</p>
-<p>为实现这样的功能，最直观的方法就是使用 Set 记录每一个元素，在数量巨大的情况下，会造成大量的内存占用。以存储 $2^{30}$ (约10亿)个长度为64bit的url为例，需要占用 $64*2^{30} = 64GB$ 的空间。Set方案的空间占用与元素的数量成正比，空间复杂度为 $O(N)$</p>
+<p>为实现这样的功能，最直观的方法就是使用 Set 记录每一个元素，在数量巨大的情况下，会造成大量的内存占用。以存储 $2^{30}$ (约10亿)个长度为64bit的url为例，需要占用 $64 \times 2^{30} = 64GB$ 的空间。Set方案的空间占用与元素的数量成正比，空间复杂度为 $O(N)$</p>
 <p>如果使用bitmap来存储，则需要将不同的url映射到不同的数字。即使最理想的情况下，url之间没有冲突，且从1到 $2^{30}$ 都没有空闲，bitmap也需要占用 $2^{30}\div 8 = 2^{27} = 128MB$ 的空间。bitmap方案占用空间只与最大取值有关系，与元素数量无关。极端情况下，即使只有一个url，在这个例子中也需要占用128MB的空间，空间复杂度为 $O(N_{max})$</p>
 <p>以上两种方式都对基数进行精确统计，但是很多时候只需要一个大概的数量，只要误差在一定范围内即可。接下来要讨论的几种算法可以在牺牲一定精确性的情况下，大幅度降低空间占用。</p>
 <h1 id="linear-counting">Linear Counting</h1>
@@ -193,14 +193,13 @@ $$Pr(U_n=0)=e^{-\lambda}$$
 <p>这部分需要大量的数学分析，只提一下分析的框架：</p>
 <p>$$P_n(X = k) = ((1-\frac{1}{2^k})^n)-((1-\frac{1}{2^{k-1}})^n)$$</p>
 <p>构建指数生成函数，通过poissonization得到估计量的 $Poisson$  期望和方差后，通过de-poissonization 得到一个渐近无偏估计量：</p>
-<p>$\hat{n} = \alpha_m2^{\frac{1}{m}\Sigma{M[i]}}$</p>
+<p>$$\hat{n} = \alpha_m2^{\frac{1}{m}\Sigma{M[i]}}$$</p>
 <p>其中</p>
-<p>$\alpha_m = (\Gamma (-\frac{1}{m})\frac{1-2^{\frac{1}{m}}}{\log 2})^{-m}$</p>
+<p>$$\alpha_m = (\Gamma (-\frac{1}{m})\frac{1-2^{\frac{1}{m}}}{\log 2})^{-m}$$</p>
 <p>$$\Gamma(s) = \frac{1}{s} \int_{0}^{\infty}{e^{-t}t^s},dt$$</p>
 <h2 id="误差分析">误差分析</h2>
 <p>不加证明得给出结论：</p>
-<p>当 $m \gt 64$ 时</p>
-<p>$StdError(\frac{\hat{n}}{n}) \approx \frac{1.3}{\sqrt{m}}$</p>
+<p>当 $m \gt 64$ 时 $StdError(\frac{\hat{n}}{n}) \approx \frac{1.3}{\sqrt{m}}$</p>
 <p>如果要将误差控制在 $\epsilon$ 之内，则</p>
 <p>$$m \gt (\frac{1.30}{\epsilon})^2$$</p>
 <h2 id="空间复杂度-1">空间复杂度</h2>
@@ -228,18 +227,19 @@ $$ \frac{\sqrt{e^t-t-1}}{t\sqrt{m}} = \frac{1.3}{\sqrt{m}}$$</p>
 <h3 id="调和平均数以减少离群值影响">调和平均数以减少离群值影响</h3>
 <p>HLLC的第一个改进是使用调和平均数替代几何平均数。注意LLC是对各个桶取算数平均数，而算数平均数最终被应用到2的指数上，所以总体来看LLC取得是几何平均数。由于几何平均数对于离群值（例如0）特别敏感，因此当存在离群值时，LLC的偏差就会很大，这也从另一个角度解释了为什么n不太大时LLC的效果不太好。这是因为n较小时，可能存在较多空桶，而这些特殊的离群值强烈干扰了几何平均数的稳定性。</p>
 <p>因此，HLLC使用调和平均数来代替几何平均数，可以有效抵抗离群值的扰动。使用调和平均数代替几何平均数后，估计公式变为如下：</p>
-<p>$\hat{n} =\frac{\alpha_m m^2}{\Sigma{2^{-M}}}, \quad \alpha_m = (m\int_0^{\infty}(\log_2(\frac{2+u}{1+u}))^m , du)^{-1}$</p>
+<p>$$\hat{n} =\frac{\alpha_m m^2}{\Sigma{2^{-M}}}, \quad \alpha_m = (m\int_0^{\infty}(\log_2(\frac{2+u}{1+u}))^m , du)^{-1}$$</p>
 <p>HLLC通过这样改进将误差从$\frac{1.3}{\sqrt{m}}$ 优化到了 $\frac{1.04}{\sqrt{m}}$，而空间复杂度与LLC相同。</p>
 <h3 id="分段偏差修正">分段偏差修正</h3>
 <p>给出了在n较小或较大时的偏差修正方案，具体来说
 $$ 估算方法 = \begin{cases} \begin{aligned} Linear Counting, &amp;if ,  E \le \frac{5m}{2} \\ HyperLogLog Counting , &amp;if ,  \frac{5m}{2} \lt E \le \frac{2^{32}}{30} \\ -2^{32}\log(1-\frac{E}{2^{32}}) , &amp;if , E \gt  \frac{2^{32}}{30} \end{aligned}\end{cases}$$</p>
 <p>参考资料</p>
 <blockquote>
-<p>《A Linear-Time Probabilistic Counting Algorithm for Database Applications》
-《LogLog Counting of Large Cardinalities (Extended Abstract)》
-《HyperLogLog: the analysis of a near-optimal cardinality estimation algorithm》
-《Fast and Accurate Traffic Matrix Measurement Using Adaptive Cardinality Counting》
-博客：http://blog.codinglabs.org/articles/algorithms-for-cardinality-estimation-part-i.html</p>
+<p>《A Linear-Time Probabilistic Counting Algorithm for Database Applications》</p>
+<p>《LogLog Counting of Large Cardinalities (Extended Abstract)》</p>
+<p>《HyperLogLog: the analysis of a near-optimal cardinality estimation algorithm》</p>
+<p>《Fast and Accurate Traffic Matrix Measurement Using Adaptive Cardinality Counting》</p>
+<p>博客：http://blog.codinglabs.org/articles/algorithms-for-cardinality-estimation-part-i.html</p>
+<p>loglog demo: <a href="http://content.research.neustar.biz/blog/hll.html">http://content.research.neustar.biz/blog/hll.html</a></p>
 </blockquote></article>
     </section>
 
